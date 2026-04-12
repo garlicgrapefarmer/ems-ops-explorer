@@ -6,14 +6,33 @@ function CommsPanel() {
   const [mode, setMode] = React.useState("general");
   const [range, setRange] = React.useState("7");
 
-  const generalNews = [
-    "Emergency departments reporting sustained crowding and ambulance offload delays.",
-    "Agencies testing alternate response for low-acuity calls.",
-    "Workforce shortages and retention pressure remain top leadership concerns.",
-    "Municipalities reviewing response time standards amid rising demand.",
-    "Responder safety and violence exposure continue to trend upward.",
-  ];
+const [news, setNews] = React.useState<string[]>([]);
 
+React.useEffect(() => {
+  async function fetchNews() {
+    try {
+      const res = await fetch(
+        "https://news.google.com/rss/search?q=EMS+OR+paramedic+OR+ambulance&hl=en-US&gl=US&ceid=US:en"
+      );
+      const text = await res.text();
+
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, "text/xml");
+
+      const items = Array.from(xml.querySelectorAll("item")).slice(0, 5);
+
+      const headlines = items.map(
+        (item) => item.querySelector("title")?.textContent || ""
+      );
+
+      setNews(headlines);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  fetchNews();
+}, []);
   const researchSignals = [
     "AI-assisted documentation reducing field cognitive load.",
     "Body-worn technology expanding into healthcare environments.",
@@ -22,8 +41,7 @@ function CommsPanel() {
     "Integration of operational + clinical data accelerating.",
   ];
 
-  const data = mode === "general" ? generalNews : researchSignals;
-
+const data = mode === "general" ? news : researchSignals;
   return (
     <div
       style={{
