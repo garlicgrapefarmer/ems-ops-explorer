@@ -6,26 +6,21 @@ function CommsPanel() {
   const [mode, setMode] = React.useState("general");
   const [range, setRange] = React.useState("7");
 
-const [news, setNews] = React.useState<string[]>([]);
-
+const [news, setNews] = React.useState<
 React.useEffect(() => {
   async function fetchNews() {
     try {
-      const res = await fetch(
-        "https://news.google.com/rss/search?q=EMS+OR+paramedic+OR+ambulance&hl=en-US&gl=US&ceid=US:en"
-      );
-      const text = await res.text();
+      const res = await fetch("/api/news");
+      const data = await res.json();
+      setNews(data.headlines || []);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(text, "text/xml");
-
-      const items = Array.from(xml.querySelectorAll("item")).slice(0, 5);
-
-      const headlines = items.map(
-        (item) => item.querySelector("title")?.textContent || ""
-      );
-
-      setNews(headlines);
+  fetchNews();
+}, []);  { title: string; link: string; source: string; pubDate: string }[]
+>([]);
     } catch (err) {
       console.error(err);
     }
