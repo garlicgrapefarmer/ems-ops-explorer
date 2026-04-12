@@ -1,33 +1,13 @@
-
 "use client";
 import React from "react";
 
 function CommsPanel() {
   const [mode, setMode] = React.useState("general");
   const [range, setRange] = React.useState("7");
+  const [news, setNews] = React.useState<
+    { title: string; link: string; source: string; pubDate: string }[]
+  >([]);
 
-const [news, setNews] = React.useState<
-React.useEffect(() => {
-  async function fetchNews() {
-    try {
-      const res = await fetch("/api/news");
-      const data = await res.json();
-      setNews(data.headlines || []);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  fetchNews();
-}, []);  { title: string; link: string; source: string; pubDate: string }[]
->([]);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  fetchNews();
-}, []);
   const researchSignals = [
     "AI-assisted documentation reducing field cognitive load.",
     "Body-worn technology expanding into healthcare environments.",
@@ -36,7 +16,22 @@ React.useEffect(() => {
     "Integration of operational + clinical data accelerating.",
   ];
 
-const data = mode === "general" ? news : researchSignals;
+  React.useEffect(() => {
+    async function fetchNews() {
+      try {
+        const res = await fetch("/api/news");
+        const data = await res.json();
+        setNews(data.headlines || []);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchNews();
+  }, []);
+
+  const data = mode === "general" ? news : researchSignals;
+
   return (
     <div
       style={{
@@ -115,7 +110,30 @@ const data = mode === "general" ? news : researchSignals;
               lineHeight: 1.5,
             }}
           >
-            {item}
+            {typeof item === "string" ? (
+              item
+            ) : (
+              <div>
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    color: "#111827",
+                    fontWeight: 700,
+                    textDecoration: "none",
+                    display: "block",
+                    marginBottom: 6,
+                  }}
+                >
+                  {item.title}
+                </a>
+                <div style={{ fontSize: 12, color: "#6b7280" }}>
+                  {item.source}
+                  {item.pubDate ? ` • ${new Date(item.pubDate).toLocaleDateString()}` : ""}
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -546,100 +564,100 @@ export default function Home() {
             marginBottom: 20,
           }}
         >
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: 18,
-              padding: 22,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-            }}
-          >
-            <h2 style={{ marginTop: 0, fontSize: 22 }}>District Performance</h2>
-            <div style={{ overflowX: "auto" }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 14,
-                }}
-              >
-                <thead>
-                  <tr style={{ textAlign: "left", color: "#6b7280" }}>
-                    <th style={{ paddingBottom: 10 }}>District</th>
-                    <th style={{ paddingBottom: 10 }}>Calls</th>
-                    <th style={{ paddingBottom: 10 }}>Avg Response</th>
-                    <th style={{ paddingBottom: 10 }}>UHU</th>
-                    <th style={{ paddingBottom: 10 }}>Mutual Aid</th>
-                    <th style={{ paddingBottom: 10 }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {districtRows.map((d) => (
-                    <tr key={d.name} style={{ borderTop: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px 0", fontWeight: 700 }}>
-                        {d.name}
-                      </td>
-                      <td style={{ padding: "12px 0" }}>{d.calls}</td>
-                      <td style={{ padding: "12px 0" }}>{d.response}</td>
-                      <td style={{ padding: "12px 0" }}>{d.uhu}</td>
-                      <td style={{ padding: "12px 0" }}>{d.mutualAid}</td>
-                      <td style={{ padding: "12px 0" }}>{d.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: 18,
-              padding: 22,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-            }}
-          >
-            <h2 style={{ marginTop: 0, fontSize: 22 }}>
-              Future Intelligence Layers
-            </h2>
-            <p
+            <div
               style={{
-                color: "#6b7280",
-                marginTop: 0,
-                marginBottom: 16,
-                lineHeight: 1.6,
+                background: "#ffffff",
+                borderRadius: 18,
+                padding: 22,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
               }}
             >
-              This gets materially stronger when the system can understand what
-              truly happened on scene, during transport, and at handoff rather
-              than relying only on coded incident fields.
-            </p>
+              <h2 style={{ marginTop: 0, fontSize: 22 }}>District Performance</h2>
+              <div style={{ overflowX: "auto" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    fontSize: 14,
+                  }}
+                >
+                  <thead>
+                    <tr style={{ textAlign: "left", color: "#6b7280" }}>
+                      <th style={{ paddingBottom: 10 }}>District</th>
+                      <th style={{ paddingBottom: 10 }}>Calls</th>
+                      <th style={{ paddingBottom: 10 }}>Avg Response</th>
+                      <th style={{ paddingBottom: 10 }}>UHU</th>
+                      <th style={{ paddingBottom: 10 }}>Mutual Aid</th>
+                      <th style={{ paddingBottom: 10 }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {districtRows.map((d) => (
+                      <tr key={d.name} style={{ borderTop: "1px solid #f1f5f9" }}>
+                        <td style={{ padding: "12px 0", fontWeight: 700 }}>
+                          {d.name}
+                        </td>
+                        <td style={{ padding: "12px 0" }}>{d.calls}</td>
+                        <td style={{ padding: "12px 0" }}>{d.response}</td>
+                        <td style={{ padding: "12px 0" }}>{d.uhu}</td>
+                        <td style={{ padding: "12px 0" }}>{d.mutualAid}</td>
+                        <td style={{ padding: "12px 0" }}>{d.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                gap: 12,
+                background: "#ffffff",
+                borderRadius: 18,
+                padding: 22,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
               }}
             >
-              {futureSignals.map((item) => (
-                <div
-                  key={item}
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    borderRadius: 14,
-                    padding: 16,
-                    background: "#fafafa",
-                    fontWeight: 600,
-                  }}
-                >
-                  {item}
-                </div>
-              ))}
+              <h2 style={{ marginTop: 0, fontSize: 22 }}>
+                Future Intelligence Layers
+              </h2>
+              <p
+                style={{
+                  color: "#6b7280",
+                  marginTop: 0,
+                  marginBottom: 16,
+                  lineHeight: 1.6,
+                }}
+              >
+                This gets materially stronger when the system can understand what
+                truly happened on scene, during transport, and at handoff rather
+                than relying only on coded incident fields.
+              </p>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                  gap: 12,
+                }}
+              >
+                {futureSignals.map((item) => (
+                  <div
+                    key={item}
+                    style={{
+                      border: "1px solid #e5e7eb",
+                      borderRadius: 14,
+                      padding: 16,
+                      background: "#fafafa",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
-  );
-}
+      </main>
+    );
+  }
