@@ -1,3 +1,15 @@
+import type { Metadata, Viewport } from "next";
+
+export const metadata: Metadata = {
+  title: "EMS Ops Explorer",
+  description: "Operational dashboard for EMS leadership",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -5,7 +17,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body
+        style={{
+          margin: 0,
+          padding: 0,
+          width: "100%",
+          maxWidth: "100vw",
+          overflowX: "hidden",
+        }}
+      >
+        {children}
+      </body>
     </html>
   );
 }
