@@ -263,7 +263,61 @@ function CommsPanel() {
       <div style={styles.panelHeaderRow}>
         <h2 style={styles.sectionTitle}>Global Field Signals</h2>
       </div>
+      <section style={styles.section}>
+        <div style={styles.sectionHeaderRow}>
+          <div>
+            <div style={styles.sectionEyebrow}>LIVE OPERATIONAL ENVIRONMENT</div>
+            <h2 style={styles.sectionTitle}>Regional System Pulse</h2>
+          </div>
 
+          <div
+            style={{
+              padding: "8px 14px",
+              borderRadius: 999,
+              background: "#122033",
+              color: "#d7e3f4",
+              fontSize: 12,
+              fontWeight: 700,
+            }}
+          >
+            RURAL OPS VIEW
+          </div>
+        </div>
+
+        <div style={styles.signalGrid}>
+          <div style={styles.signalCard}>
+            <div style={styles.signalLabel}>Respiratory Trend</div>
+            <div style={styles.signalValue}>↑ Moderate</div>
+            <div style={styles.signalNote}>
+              Regional respiratory activity elevated across schools and LTC.
+            </div>
+          </div>
+
+          <div style={styles.signalCard}>
+            <div style={styles.signalLabel}>Transfer Delays</div>
+            <div style={styles.signalValue}>42 min avg</div>
+            <div style={styles.signalNote}>
+              Critical access hospital transfers trending above baseline.
+            </div>
+          </div>
+
+          <div style={styles.signalCard}>
+            <div style={styles.signalLabel}>Community Paramedicine</div>
+            <div style={styles.signalValue}>31 avoided ED trips</div>
+            <div style={styles.signalNote}>
+              Care-in-place activity increasing across rural service area.
+            </div>
+          </div>
+
+          <div style={styles.signalCard}>
+            <div style={styles.signalLabel}>Mutual Aid Load</div>
+            <div style={styles.signalValue}>Stable</div>
+            <div style={styles.signalNote}>
+              No significant cross-county surge dependency detected today.
+            </div>
+          </div>
+        </div>
+      </section>
       <p style={styles.sectionIntro}>
         Quick morning awareness for chiefs who want both the live signal and the
         research-minded interpretation.
