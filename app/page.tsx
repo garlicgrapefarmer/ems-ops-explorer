@@ -15,6 +15,8 @@ type WeatherAlert = {
   severity: string;
 };
 
+type Role = "Chief" | "Operations" | "Medic" | "Community";
+
 type Topic =
   | "all"
   | "bodyworn"
@@ -410,7 +412,7 @@ function CommsPanel() {
   );
 }
 
-function OperationalEnvironment() {
+function OperationalEnvironment({ intro }: { intro: string }) {
   const [alerts, setAlerts] = React.useState<WeatherAlert[]>([]);
   const [activeDomain, setActiveDomain] = React.useState("Weather Alerts");
 
@@ -513,9 +515,7 @@ function OperationalEnvironment() {
       <div style={styles.panelHeaderRow}>
         <h2 style={styles.sectionTitle}>Operational Environment</h2>
       </div>
-      <p style={styles.sectionIntro}>
-        Demo Rural Region view for a Rural Multi-County System.
-      </p>
+      <p style={styles.sectionIntro}>{intro}</p>
 
       <div style={styles.signalGrid}>
         {environmentSignals.map((signal) => (
@@ -578,10 +578,87 @@ function OperationalEnvironment() {
 }
 
 export default function Home() {
+  const [role, setRole] = React.useState<Role>("Chief");
   const [pulse, setPulse] = React.useState<number | null>(null);
   const [activeSignal, setActiveSignal] = React.useState("lateCalls");
 
   const pulseLabels = ["Calm", "Manageable", "Mixed", "Strained", "On fire"];
+
+  const roleCopy: Record<
+    Role,
+    {
+      summary: string;
+      pulseIntro: string;
+      pulseMarked: string;
+      environmentIntro: string;
+      topSignalsIntro: string;
+      detailLens: string;
+      callMixIntro: string;
+    }
+  > = {
+    Chief: {
+      summary:
+        "Executive view of sustainability, regional strain, mutual aid exposure, and care-in-place impact across the rural system.",
+      pulseIntro:
+        "A quick executive read on whether the system is sustainable today.",
+      pulseMarked: "Executive perspective marked today as",
+      environmentIntro:
+        "Demo Rural Region view for a Rural Multi-County System, with emphasis on sustainability, mutual aid exposure, and care-in-place demand.",
+      topSignalsIntro:
+        "The three signals most likely to shape executive visibility and regional sustainability.",
+      detailLens:
+        "Chief lens: connect strain, mutual aid, and care-in-place impact before they become board-level problems.",
+      callMixIntro:
+        "Demand mix with care-in-place and longitudinal engagement called out as sustainability levers.",
+    },
+    Operations: {
+      summary:
+        "Operations view of transfer delays, response pressure, staffing strain, unit availability, and hospital offload.",
+      pulseIntro:
+        "A quick operational read on availability, offload drag, and staffing pressure.",
+      pulseMarked: "Operations perspective marked today as",
+      environmentIntro:
+        "Demo Rural Region view for operational leaders watching transfer pressure, unit availability, and hospital offload risk.",
+      topSignalsIntro:
+        "The three signals most likely to affect response coverage, staffing strain, and transfer flow.",
+      detailLens:
+        "Operations lens: translate weak signals into deployment, staging, and offload decisions.",
+      callMixIntro:
+        "Demand mix showing where emergency response, transfers, and CP work compete for available units.",
+    },
+    Medic: {
+      summary:
+        "Field view of safety, turnaround burden, CP referrals, practical awareness, and usefulness on shift.",
+      pulseIntro:
+        "A quick field read on whether the day feels workable from the truck.",
+      pulseMarked: "Field perspective marked today as",
+      environmentIntro:
+        "Demo Rural Region view for field crews watching practical risks that shape scene safety, turnaround, and CP referral opportunities.",
+      topSignalsIntro:
+        "The three signals most likely to affect field safety, turnaround burden, and practical awareness.",
+      detailLens:
+        "Medic lens: make the dashboard useful for what crews can feel in real time, not only what leaders review later.",
+      callMixIntro:
+        "Demand mix showing emergency work, handoff burden, and CP referrals that can reduce repeat low-acuity calls.",
+    },
+    Community: {
+      summary:
+        "Community view of transparency, access to care, community paramedicine, aging in place, and regional readiness.",
+      pulseIntro:
+        "A plain-language read on regional health readiness and access to care.",
+      pulseMarked: "Community perspective marked today as",
+      environmentIntro:
+        "Demo Rural Region view for public stakeholders watching access, aging-in-place support, and community health readiness.",
+      topSignalsIntro:
+        "The three signals most likely to affect access to care, transparency, and community readiness.",
+      detailLens:
+        "Community lens: show how EMS system pressure connects to care access, aging in place, and regional readiness.",
+      callMixIntro:
+        "Demand mix showing how community paramedicine and follow-up work support access outside the emergency department.",
+    },
+  };
+
+  const activeRoleCopy = roleCopy[role];
 
   const topCards = [
     { title: "Calls (24h)", value: "412", note: "vs prior 24h +8.4%" },
@@ -591,10 +668,29 @@ export default function Home() {
   ];
 
   const callMix = [
-    { label: "911", value: "312" },
-    { label: "Community Paramedic", value: "64" },
-    { label: "Special Ops", value: "21" },
-    { label: "Other", value: "15" },
+    {
+      label: "911 Emergency",
+      value: "312",
+      note: "Immediate response demand",
+      metrics: ["Treat & release: 38", "Referred to CP follow-up: 24"],
+    },
+    {
+      label: "Interfacility Transport",
+      value: "86",
+      note: "Transfer and hospital flow pressure",
+      metrics: ["Long-distance transfers: 19", "Delayed pickups: 11"],
+    },
+    {
+      label: "Community Paramedicine",
+      value: "64",
+      note: "Care-in-place and longitudinal engagement",
+      metrics: [
+        "Transitional Care Management: 18",
+        "Chronic Care Management: 27",
+        "Post-discharge follow-up: 31",
+        "Avoided ED visits: 22",
+      ],
+    },
   ];
 
   const signals = [
@@ -718,21 +814,43 @@ export default function Home() {
           </div>
           <div style={styles.heroSubtitle}>Territory: Regional System Demo</div>
           <div style={styles.heroText}>
-            Late-call burden is rising in central districts, mutual aid demand is
-            increasing, and hospital offload delays remain the primary operational
-            constraint this morning.
+            {activeRoleCopy.summary}
           </div>
         </div>
 
-        <OperationalEnvironment />
+        <div style={styles.rolePanel}>
+          <div style={styles.roleEyebrow}>Perspective</div>
+          <div style={styles.roleTabs} role="tablist" aria-label="Dashboard perspective">
+            {(["Chief", "Operations", "Medic", "Community"] as Role[]).map(
+              (roleName) => (
+                <button
+                  key={roleName}
+                  type="button"
+                  role="tab"
+                  aria-selected={role === roleName}
+                  onClick={() => setRole(roleName)}
+                  style={{
+                    ...styles.roleTab,
+                    background: role === roleName ? "#111827" : "#ffffff",
+                    color: role === roleName ? "#ffffff" : "#374151",
+                    border:
+                      role === roleName
+                        ? "1px solid #111827"
+                        : "1px solid #d1d5db",
+                  }}
+                >
+                  {roleName}
+                </button>
+              )
+            )}
+          </div>
+        </div>
 
         <div style={styles.panel}>
           <div style={styles.panelHeaderRow}>
             <h2 style={styles.sectionTitle}>System Pulse</h2>
           </div>
-          <p style={styles.sectionIntro}>
-            How is the day looking from your seat?
-          </p>
+          <p style={styles.sectionIntro}>{activeRoleCopy.pulseIntro}</p>
 
           <div style={styles.pulseRow}>
             {["😌", "🙂", "😐", "😟", "🔥"].map((emoji, idx) => (
@@ -754,17 +872,17 @@ export default function Home() {
           <div style={styles.metaText}>
             {pulse === null
               ? "Tap a quick read on the day."
-              : `You marked today as: ${pulseLabels[pulse]}.`}
+              : `${activeRoleCopy.pulseMarked}: ${pulseLabels[pulse]}.`}
           </div>
         </div>
+
+        <OperationalEnvironment intro={activeRoleCopy.environmentIntro} />
 
         <div style={styles.panel}>
           <div style={styles.panelHeaderRow}>
             <h2 style={styles.sectionTitle}>Top Signals</h2>
           </div>
-          <p style={styles.sectionIntro}>
-            The three things most likely to shape your operational day.
-          </p>
+          <p style={styles.sectionIntro}>{activeRoleCopy.topSignalsIntro}</p>
 
           <div style={styles.signalGrid}>
             {signals.map((signal) => (
@@ -791,6 +909,9 @@ export default function Home() {
           <div style={styles.detailCard}>
             <div style={styles.detailLabel}>{activeSignalData.detailTitle}</div>
             <div style={styles.detailText}>{activeSignalData.detail}</div>
+            <div style={{ ...styles.metaText, marginBottom: 10 }}>
+              {activeRoleCopy.detailLens}
+            </div>
 
             <div style={styles.supportList}>
               {activeSignalData.support.map((item) => (
@@ -816,18 +937,31 @@ export default function Home() {
           <div style={styles.panelHeaderRow}>
             <h2 style={styles.sectionTitle}>Call Mix</h2>
           </div>
-          <p style={styles.sectionIntro}>
-            Quick category view for services balancing emergency, community, and
-            specialty demand.
-          </p>
+          <p style={styles.sectionIntro}>{activeRoleCopy.callMixIntro}</p>
 
-          <div style={styles.kpiGrid}>
+          <div style={styles.signalGrid}>
             {callMix.map((item) => (
-              <div key={item.label} style={styles.kpiCard}>
-                <div style={styles.kpiLabel}>{item.label}</div>
-                <div style={styles.kpiValue}>{item.value}</div>
+              <div key={item.label} style={styles.callMixCard}>
+                <div style={styles.signalHeaderRow}>
+                  <div>
+                    <div style={styles.kpiLabel}>{item.label}</div>
+                    <div style={styles.kpiValue}>{item.value}</div>
+                  </div>
+                  <div style={styles.callMixNote}>{item.note}</div>
+                </div>
+                <div style={styles.supportList}>
+                  {item.metrics.map((metric) => (
+                    <div key={metric} style={styles.supportItem}>
+                      {metric}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
+          </div>
+          <div style={styles.signalText}>
+            Care-in-place and longitudinal engagement reduce avoidable transport,
+            protect unit availability, and improve rural sustainability.
           </div>
         </div>
 
@@ -943,6 +1077,47 @@ const styles: any = {
     boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
     minWidth: 0,
     overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  rolePanel: {
+    background: "#ffffff",
+    borderRadius: 18,
+    padding: 10,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+    minWidth: 0,
+    overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  roleEyebrow: {
+    fontSize: 11,
+    fontWeight: 800,
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+    color: "#6b7280",
+    marginBottom: 8,
+    paddingLeft: 2,
+  },
+
+  roleTabs: {
+    display: "flex",
+    gap: 8,
+    overflowX: "auto",
+    WebkitOverflowScrolling: "touch",
+    paddingBottom: 2,
+    minWidth: 0,
+  },
+
+  roleTab: {
+    borderRadius: 999,
+    padding: "10px 14px",
+    fontSize: 13,
+    fontWeight: 800,
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+    flex: "0 0 auto",
+    minHeight: 40,
     boxSizing: "border-box",
   },
 
@@ -1174,6 +1349,25 @@ const styles: any = {
     fontSize: 12,
     color: "#9ca3af",
     lineHeight: 1.4,
+    overflowWrap: "anywhere",
+  },
+
+  callMixCard: {
+    background: "#ffffff",
+    borderRadius: 14,
+    padding: 12,
+    border: "1px solid #e5e7eb",
+    minWidth: 0,
+    overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  callMixNote: {
+    fontSize: 12,
+    color: "#6b7280",
+    lineHeight: 1.35,
+    textAlign: "right",
+    maxWidth: "45%",
     overflowWrap: "anywhere",
   },
 
