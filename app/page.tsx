@@ -412,11 +412,12 @@ function CommsPanel() {
 
 function OperationalEnvironment() {
   const [alerts, setAlerts] = React.useState<WeatherAlert[]>([]);
+  const [activeDomain, setActiveDomain] = React.useState("Weather Alerts");
 
   React.useEffect(() => {
     async function fetchWeatherAlerts() {
       try {
-        const res = await fetch("/api/weather-alerts");
+        const res = await fetch("/api/weather-alerts?state=KS");
         const data = await res.json();
         setAlerts(data.alerts || []);
       } catch (err) {
@@ -428,28 +429,84 @@ function OperationalEnvironment() {
     fetchWeatherAlerts();
   }, []);
 
-  const environmentSignals = [
+  const territories = [
+    "North Prairie",
+    "River Bend",
+    "Central Plains",
+    "South Ridge",
+  ];
+
+  const environmentSignals: {
+    title: string;
+    value: string;
+    note: string;
+    territoryRisk: Record<string, string>;
+  }[] = [
     {
       title: "Weather Alerts",
-      value: "Live NE",
-      note: "Pulled from National Weather Service alert feed.",
+      value: "Live Regional",
+      note: "Pulled from the Regional Alert Feed.",
+      territoryRisk: {
+        "North Prairie": "Watch",
+        "River Bend": "Clear",
+        "Central Plains": "Advisory",
+        "South Ridge": "Watch",
+      },
     },
     {
       title: "Air Quality",
       value: "Moderate",
       note: "Smoke and respiratory risk may affect vulnerable populations.",
+      territoryRisk: {
+        "North Prairie": "Good",
+        "River Bend": "Moderate",
+        "Central Plains": "Moderate",
+        "South Ridge": "Good",
+      },
     },
     {
       title: "Respiratory Trend",
       value: "Elevated",
       note: "Seasonal illness pressure may increase low-acuity and care-in-place demand.",
+      territoryRisk: {
+        "North Prairie": "Elevated",
+        "River Bend": "Moderate",
+        "Central Plains": "Elevated",
+        "South Ridge": "Stable",
+      },
     },
     {
       title: "Rural Access",
       value: "Watch",
       note: "Long transport distances and transfer delays increase regional coverage risk.",
+      territoryRisk: {
+        "North Prairie": "Watch",
+        "River Bend": "Stable",
+        "Central Plains": "Watch",
+        "South Ridge": "Strained",
+      },
     },
   ];
+
+  const activeSignal =
+    environmentSignals.find((signal) => signal.title === activeDomain) ||
+    environmentSignals[0];
+
+  const riskStyle = (value: string) => ({
+    ...styles.riskBadge,
+    background:
+      value === "Clear" || value === "Good" || value === "Stable"
+        ? "#dcfce7"
+        : value === "Moderate" || value === "Advisory" || value === "Watch"
+        ? "#fef3c7"
+        : "#fee2e2",
+    color:
+      value === "Clear" || value === "Good" || value === "Stable"
+        ? "#166534"
+        : value === "Moderate" || value === "Advisory" || value === "Watch"
+        ? "#92400e"
+        : "#991b1b",
+  });
 
   return (
     <div style={styles.panel}>
@@ -457,35 +514,61 @@ function OperationalEnvironment() {
         <h2 style={styles.sectionTitle}>Operational Environment</h2>
       </div>
       <p style={styles.sectionIntro}>
-        External conditions that may shape rural coverage, care-in-place demand,
-        and transfer pressure today.
+        Demo Rural Region view for a Rural Multi-County System.
       </p>
 
       <div style={styles.signalGrid}>
         {environmentSignals.map((signal) => (
-          <div key={signal.title} style={styles.signalCard}>
+          <button
+            key={signal.title}
+            onClick={() => setActiveDomain(signal.title)}
+            style={{
+              ...styles.signalCard,
+              border:
+                activeDomain === signal.title
+                  ? "2px solid #111827"
+                  : "1px solid #e5e7eb",
+            }}
+          >
             <div style={styles.signalLabel}>{signal.title}</div>
             <div style={styles.kpiValue}>{signal.value}</div>
             <div style={styles.signalNote}>{signal.note}</div>
-          </div>
+          </button>
         ))}
       </div>
 
       <div style={styles.detailCard}>
-        <div style={styles.detailLabel}>Active Nebraska Weather Alerts</div>
+        <div style={styles.detailLabel}>{activeSignal.title} by Territory</div>
+        <div style={styles.detailText}>
+          This domain helps leaders understand where environmental and community
+          conditions may affect call volume, transport time, or care-in-place
+          demand.
+        </div>
+        <div style={styles.supportList}>
+          {territories.map((territory) => (
+            <div key={territory} style={styles.territoryItem}>
+              <div style={styles.peerTitle}>{territory}</div>
+              <span style={riskStyle(activeSignal.territoryRisk[territory])}>
+                {activeSignal.territoryRisk[territory]}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ ...styles.detailCard, marginTop: 10 }}>
+        <div style={styles.detailLabel}>Regional Alert Feed</div>
         <div style={styles.stack10}>
           {alerts.length ? (
             alerts.slice(0, 3).map((alert) => (
               <div key={alert.id} style={styles.supportItem}>
                 <div style={styles.peerTitle}>{alert.event}</div>
-                <div style={styles.metaText}>
-                  {alert.severity} severity • {alert.areaDesc}
-                </div>
+                <div style={styles.metaText}>{alert.severity} severity</div>
               </div>
             ))
           ) : (
             <div style={styles.signalText}>
-              No active Nebraska weather alerts.
+              No active regional weather alerts.
             </div>
           )}
         </div>
@@ -1026,6 +1109,30 @@ const styles: any = {
     minWidth: 0,
     overflowWrap: "anywhere",
     boxSizing: "border-box",
+  },
+
+  territoryItem: {
+    borderRadius: 10,
+    background: "#ffffff",
+    border: "1px solid #e5e7eb",
+    padding: "10px 12px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 10,
+    minWidth: 0,
+    overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  riskBadge: {
+    display: "inline-block",
+    padding: "4px 10px",
+    borderRadius: 999,
+    fontSize: 12,
+    fontWeight: 800,
+    lineHeight: 1.2,
+    flexShrink: 0,
   },
 
   kpiGrid: {
