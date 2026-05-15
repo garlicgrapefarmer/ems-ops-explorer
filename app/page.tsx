@@ -8,6 +8,13 @@ type NewsItem = {
   pubDate: string;
 };
 
+type WeatherAlert = {
+  id: string;
+  event: string;
+  areaDesc: string;
+  severity: string;
+};
+
 type Topic =
   | "all"
   | "bodyworn"
@@ -403,6 +410,90 @@ function CommsPanel() {
   );
 }
 
+function OperationalEnvironment() {
+  const [alerts, setAlerts] = React.useState<WeatherAlert[]>([]);
+
+  React.useEffect(() => {
+    async function fetchWeatherAlerts() {
+      try {
+        const res = await fetch("/api/weather-alerts");
+        const data = await res.json();
+        setAlerts(data.alerts || []);
+      } catch (err) {
+        console.error(err);
+        setAlerts([]);
+      }
+    }
+
+    fetchWeatherAlerts();
+  }, []);
+
+  const environmentSignals = [
+    {
+      title: "Weather Alerts",
+      value: "Live NE",
+      note: "Pulled from National Weather Service alert feed.",
+    },
+    {
+      title: "Air Quality",
+      value: "Moderate",
+      note: "Smoke and respiratory risk may affect vulnerable populations.",
+    },
+    {
+      title: "Respiratory Trend",
+      value: "Elevated",
+      note: "Seasonal illness pressure may increase low-acuity and care-in-place demand.",
+    },
+    {
+      title: "Rural Access",
+      value: "Watch",
+      note: "Long transport distances and transfer delays increase regional coverage risk.",
+    },
+  ];
+
+  return (
+    <div style={styles.panel}>
+      <div style={styles.panelHeaderRow}>
+        <h2 style={styles.sectionTitle}>Operational Environment</h2>
+      </div>
+      <p style={styles.sectionIntro}>
+        External conditions that may shape rural coverage, care-in-place demand,
+        and transfer pressure today.
+      </p>
+
+      <div style={styles.signalGrid}>
+        {environmentSignals.map((signal) => (
+          <div key={signal.title} style={styles.signalCard}>
+            <div style={styles.signalLabel}>{signal.title}</div>
+            <div style={styles.kpiValue}>{signal.value}</div>
+            <div style={styles.signalNote}>{signal.note}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={styles.detailCard}>
+        <div style={styles.detailLabel}>Active Nebraska Weather Alerts</div>
+        <div style={styles.stack10}>
+          {alerts.length ? (
+            alerts.slice(0, 3).map((alert) => (
+              <div key={alert.id} style={styles.supportItem}>
+                <div style={styles.peerTitle}>{alert.event}</div>
+                <div style={styles.metaText}>
+                  {alert.severity} severity • {alert.areaDesc}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={styles.signalText}>
+              No active Nebraska weather alerts.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [pulse, setPulse] = React.useState<number | null>(null);
   const [activeSignal, setActiveSignal] = React.useState("lateCalls");
@@ -549,6 +640,8 @@ export default function Home() {
             constraint this morning.
           </div>
         </div>
+
+        <OperationalEnvironment />
 
         <div style={styles.panel}>
           <div style={styles.panelHeaderRow}>
@@ -853,6 +946,31 @@ const styles: any = {
     fontWeight: 800,
     lineHeight: 1.2,
     minWidth: 0,
+    overflowWrap: "anywhere",
+  },
+
+  signalLabel: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginBottom: 8,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    fontWeight: 800,
+    overflowWrap: "anywhere",
+  },
+
+  signalValue: {
+    fontSize: 20,
+    fontWeight: 800,
+    lineHeight: 1.15,
+    marginBottom: 8,
+    overflowWrap: "anywhere",
+  },
+
+  signalNote: {
+    fontSize: 13,
+    color: "#6b7280",
+    lineHeight: 1.45,
     overflowWrap: "anywhere",
   },
 
