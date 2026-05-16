@@ -13,6 +13,15 @@ type WeatherAlert = {
   event: string;
   areaDesc: string;
   severity: string;
+  effective: string;
+  expires: string;
+};
+
+type AirQualityObservation = {
+  area: string;
+  category: string;
+  aqi: number;
+  pollutant: string;
 };
 
 type Role = "Chief" | "Operations" | "Medic" | "Community";
@@ -414,29 +423,59 @@ function CommsPanel() {
 
 function OperationalEnvironment({ intro }: { intro: string }) {
   const [alerts, setAlerts] = React.useState<WeatherAlert[]>([]);
+  const [weatherUpdated, setWeatherUpdated] = React.useState("");
+  const [airQuality, setAirQuality] = React.useState<AirQualityObservation[]>(
+    []
+  );
+  const [airUpdated, setAirUpdated] = React.useState("");
   const [activeDomain, setActiveDomain] = React.useState("Weather Alerts");
 
   React.useEffect(() => {
     async function fetchWeatherAlerts() {
       try {
-        const res = await fetch("/api/weather-alerts?state=KS");
+        const res = await fetch("/api/weather-alerts");
         const data = await res.json();
         setAlerts(data.alerts || []);
+        setWeatherUpdated(data.lastUpdated || "");
       } catch (err) {
         console.error(err);
         setAlerts([]);
+        setWeatherUpdated("");
+      }
+    }
+
+    async function fetchAirQuality() {
+      try {
+        const res = await fetch("/api/air-quality");
+        const data = await res.json();
+        setAirQuality(data.observations || []);
+        setAirUpdated(data.lastUpdated || "");
+      } catch (err) {
+        console.error(err);
+        setAirQuality([]);
+        setAirUpdated("");
       }
     }
 
     fetchWeatherAlerts();
+    fetchAirQuality();
   }, []);
 
-  const territories = [
-    "North Prairie",
-    "River Bend",
-    "Central Plains",
-    "South Ridge",
-  ];
+  const territories = ["River Valley", "Prairie Lakes", "South Central", "Bluff Country"];
+
+  const formatDateTime = (value: string) =>
+    value
+      ? new Date(value).toLocaleString([], {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        })
+      : "Not reported";
+
+  const mostRelevantAqi = airQuality.find(
+    (item) => item.category === "Moderate"
+  ) || airQuality[0];
 
   const environmentSignals: {
     title: string;
@@ -446,35 +485,39 @@ function OperationalEnvironment({ intro }: { intro: string }) {
   }[] = [
     {
       title: "Weather Alerts",
-      value: "Live Regional",
-      note: "Pulled from the Regional Alert Feed.",
+      value: alerts.length ? `${alerts.length} Active` : "No Active Alerts",
+      note: alerts.length
+        ? `${alerts[0].event} reported in the corridor.`
+        : "Live Minnesota alert feed shows no active corridor alerts.",
       territoryRisk: {
-        "North Prairie": "Watch",
-        "River Bend": "Clear",
-        "Central Plains": "Advisory",
-        "South Ridge": "Watch",
+        "River Valley": alerts.length ? "Watch" : "Clear",
+        "Prairie Lakes": "Clear",
+        "South Central": alerts.length ? "Advisory" : "Clear",
+        "Bluff Country": alerts.length ? "Watch" : "Clear",
       },
     },
     {
       title: "Air Quality",
-      value: "Moderate",
-      note: "Smoke and respiratory risk may affect vulnerable populations.",
+      value: mostRelevantAqi
+        ? `${mostRelevantAqi.category} AQI ${mostRelevantAqi.aqi}`
+        : "Moderate AQI",
+      note: "Regional air quality observations highlight smoke and respiratory risk.",
       territoryRisk: {
-        "North Prairie": "Good",
-        "River Bend": "Moderate",
-        "Central Plains": "Moderate",
-        "South Ridge": "Good",
+        "River Valley": "Good",
+        "Prairie Lakes": "Moderate",
+        "South Central": "Moderate",
+        "Bluff Country": "Good",
       },
     },
     {
       title: "Respiratory Trend",
       value: "Elevated",
-      note: "Seasonal illness pressure may increase low-acuity and care-in-place demand.",
+      note: "CDC-inspired surveillance language flags rising respiratory demand.",
       territoryRisk: {
-        "North Prairie": "Elevated",
-        "River Bend": "Moderate",
-        "Central Plains": "Elevated",
-        "South Ridge": "Stable",
+        "River Valley": "Elevated",
+        "Prairie Lakes": "Moderate",
+        "South Central": "Elevated",
+        "Bluff Country": "Stable",
       },
     },
     {
@@ -482,11 +525,29 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       value: "Watch",
       note: "Long transport distances and transfer delays increase regional coverage risk.",
       territoryRisk: {
-        "North Prairie": "Watch",
-        "River Bend": "Stable",
-        "Central Plains": "Watch",
-        "South Ridge": "Strained",
+        "River Valley": "Watch",
+        "Prairie Lakes": "Stable",
+        "South Central": "Watch",
+        "Bluff Country": "Strained",
       },
+    },
+  ];
+
+  const healthPulse = [
+    {
+      title: "Respiratory Trend",
+      value: "Elevated",
+      note: "Syndromic indicators suggest increased respiratory call pressure.",
+    },
+    {
+      title: "Influenza Activity",
+      value: "Regional",
+      note: "Influenza-like illness remains present across care settings.",
+    },
+    {
+      title: "Vulnerable Population Stress",
+      value: "Watch",
+      note: "Older adults and chronic disease patients may need care-in-place follow-up.",
     },
   ];
 
@@ -516,6 +577,10 @@ function OperationalEnvironment({ intro }: { intro: string }) {
         <h2 style={styles.sectionTitle}>Operational Environment</h2>
       </div>
       <p style={styles.sectionIntro}>{intro}</p>
+      <p style={styles.sectionIntro}>
+        Live environmental/public health feeds paired with operational prototype
+        metrics for a Southern Minnesota rural EMS corridor.
+      </p>
 
       <div style={styles.signalGrid}>
         {environmentSignals.map((signal) => (
@@ -558,12 +623,19 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 
       <div style={{ ...styles.detailCard, marginTop: 10 }}>
         <div style={styles.detailLabel}>Regional Alert Feed</div>
+        <div style={{ ...styles.metaText, marginBottom: 10 }}>
+          Last updated: {formatDateTime(weatherUpdated)}
+        </div>
         <div style={styles.stack10}>
           {alerts.length ? (
             alerts.slice(0, 3).map((alert) => (
               <div key={alert.id} style={styles.supportItem}>
                 <div style={styles.peerTitle}>{alert.event}</div>
-                <div style={styles.metaText}>{alert.severity} severity</div>
+                <div style={styles.metaText}>Severity: {alert.severity}</div>
+                <div style={styles.metaText}>Affected region: {alert.areaDesc}</div>
+                <div style={styles.metaText}>
+                  Expires: {formatDateTime(alert.expires)}
+                </div>
               </div>
             ))
           ) : (
@@ -571,6 +643,47 @@ function OperationalEnvironment({ intro }: { intro: string }) {
               No active regional weather alerts.
             </div>
           )}
+        </div>
+      </div>
+
+      <div style={{ ...styles.detailCard, marginTop: 10 }}>
+        <div style={styles.detailLabel}>Air Quality Feed</div>
+        <div style={{ ...styles.metaText, marginBottom: 10 }}>
+          Last updated: {formatDateTime(airUpdated)}
+        </div>
+        <div style={styles.supportList}>
+          {airQuality.length ? (
+            airQuality.map((item) => (
+              <div key={item.area} style={styles.territoryItem}>
+                <div>
+                  <div style={styles.peerTitle}>{item.area}</div>
+                  <div style={styles.metaText}>
+                    Primary pollutant: {item.pollutant}
+                  </div>
+                </div>
+                <span style={riskStyle(item.category)}>
+                  {item.category} {item.aqi}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div style={styles.signalText}>
+              Air quality observations are temporarily unavailable.
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div style={{ ...styles.detailCard, marginTop: 10 }}>
+        <div style={styles.detailLabel}>Community Health Pulse</div>
+        <div style={styles.signalGrid}>
+          {healthPulse.map((item) => (
+            <div key={item.title} style={styles.supportItem}>
+              <div style={styles.signalLabel}>{item.title}</div>
+              <div style={styles.signalValue}>{item.value}</div>
+              <div style={styles.signalNote}>{item.note}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -598,12 +711,12 @@ export default function Home() {
   > = {
     Chief: {
       summary:
-        "Executive view of sustainability, regional strain, mutual aid exposure, and care-in-place impact across the rural system.",
+        "Executive view of sustainability, regional strain, mutual aid exposure, and care-in-place impact across a Southern Minnesota rural corridor.",
       pulseIntro:
         "A quick executive read on whether the system is sustainable today.",
       pulseMarked: "Executive perspective marked today as",
       environmentIntro:
-        "Demo Rural Region view for a Rural Multi-County System, with emphasis on sustainability, mutual aid exposure, and care-in-place demand.",
+        "Southern Minnesota corridor view for a rural multi-county system, with emphasis on sustainability, mutual aid exposure, and care-in-place demand.",
       topSignalsIntro:
         "The three signals most likely to shape executive visibility and regional sustainability.",
       detailLens:
@@ -618,7 +731,7 @@ export default function Home() {
         "A quick operational read on availability, offload drag, and staffing pressure.",
       pulseMarked: "Operations perspective marked today as",
       environmentIntro:
-        "Demo Rural Region view for operational leaders watching transfer pressure, unit availability, and hospital offload risk.",
+        "Southern Minnesota corridor view for operational leaders watching transfer pressure, unit availability, and hospital offload risk.",
       topSignalsIntro:
         "The three signals most likely to affect response coverage, staffing strain, and transfer flow.",
       detailLens:
@@ -633,7 +746,7 @@ export default function Home() {
         "A quick field read on whether the day feels workable from the truck.",
       pulseMarked: "Field perspective marked today as",
       environmentIntro:
-        "Demo Rural Region view for field crews watching practical risks that shape scene safety, turnaround, and CP referral opportunities.",
+        "Southern Minnesota corridor view for field crews watching practical risks that shape scene safety, turnaround, and CP referral opportunities.",
       topSignalsIntro:
         "The three signals most likely to affect field safety, turnaround burden, and practical awareness.",
       detailLens:
@@ -648,7 +761,7 @@ export default function Home() {
         "A plain-language read on regional health readiness and access to care.",
       pulseMarked: "Community perspective marked today as",
       environmentIntro:
-        "Demo Rural Region view for public stakeholders watching access, aging-in-place support, and community health readiness.",
+        "Southern Minnesota corridor view for public stakeholders watching access, aging-in-place support, and community health readiness.",
       topSignalsIntro:
         "The three signals most likely to affect access to care, transparency, and community readiness.",
       detailLens:
@@ -672,7 +785,7 @@ export default function Home() {
       label: "911 Emergency",
       value: "312",
       note: "Immediate response demand",
-      metrics: ["Treat & release: 38", "Referred to CP follow-up: 24"],
+      metrics: ["Treat & Release: 12%", "Referred to CP Follow-up: 8%"],
     },
     {
       label: "Interfacility Transport",
@@ -705,7 +818,7 @@ export default function Home() {
         "Demand is outrunning timely unit availability during peak periods. The issue is visible enough to affect service confidence even though top-line performance still appears acceptable.",
       support: [
         "Late calls >10 min: 18%",
-        "Most affected zone: Central",
+        "Most affected territory: South Central",
         "Direction versus prior week: Up",
       ],
     },
@@ -743,7 +856,7 @@ export default function Home() {
 
   const districtRows = [
     {
-      name: "Central",
+      name: "River Valley",
       calls: 126,
       response: "7m 11s",
       uhu: "0.58",
@@ -751,7 +864,7 @@ export default function Home() {
       status: "Strained",
     },
     {
-      name: "North",
+      name: "Prairie Lakes",
       calls: 81,
       response: "8m 42s",
       uhu: "0.44",
@@ -759,7 +872,7 @@ export default function Home() {
       status: "Stable",
     },
     {
-      name: "South",
+      name: "South Central",
       calls: 92,
       response: "9m 28s",
       uhu: "0.49",
@@ -767,7 +880,7 @@ export default function Home() {
       status: "Watch",
     },
     {
-      name: "West",
+      name: "Bluff Country",
       calls: 113,
       response: "8m 02s",
       uhu: "0.41",
@@ -812,7 +925,9 @@ export default function Home() {
           <div style={styles.heroTitle}>
             System Status: <span style={{ color: "#facc15" }}>Watch</span>
           </div>
-          <div style={styles.heroSubtitle}>Territory: Regional System Demo</div>
+          <div style={styles.heroSubtitle}>
+            Territory: Southern Minnesota Rural EMS Corridor
+          </div>
           <div style={styles.heroText}>
             {activeRoleCopy.summary}
           </div>
