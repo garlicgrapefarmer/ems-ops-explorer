@@ -917,44 +917,29 @@ export default function Home() {
 
   const callMix = [
     {
-      label: "911 Emergency",
-      value: "312",
-      note: "Immediate response demand",
+      label: "Call Disposition Mix",
+      value: "100%",
+      note: "911 outcomes",
       metrics: [
-        { label: "Care-in-Place Opportunity: 28%", status: "Building Capacity" },
-        { label: "Transport: 76%", status: "Watch" },
-        { label: "Lift Assist: 18", status: "Off Track" },
-        { label: "CP Follow-up Opportunity: 14%", status: "Building Capacity" },
+        { label: "Transported: 68%", status: "On Track" },
+        { label: "Treated On Scene: 14%", status: "On Track" },
+        { label: "Alternative Disposition: 6%", status: "Watch" },
+        { label: "Community Paramedicine Follow-Up: 12%", status: "Watch" },
       ],
+      capabilitySignals: [],
+    },
+    {
+      label: "Care-in-Place Capability",
+      value: "Building",
+      note: "Out-of-hospital care pathways",
+      metrics: [],
       capabilitySignals: [
-        { label: "i-STAT availability", status: "Developing" },
-        { label: "POCUS availability", status: "Developing" },
-        { label: "Telehealth medical control", status: "Building" },
-        { label: "Alternate destination pathways", status: "Developing" },
-        { label: "CP follow-up capacity", status: "Building" },
+        { label: "i-STAT Enabled", status: "Developing" },
+        { label: "POCUS Available", status: "Developing" },
+        { label: "Telehealth Medical Control", status: "Building" },
+        { label: "CP Follow-Up Pathway", status: "Building" },
+        { label: "SNF Partnership Coverage", status: "Watch" },
       ],
-    },
-    {
-      label: "Interfacility Transport",
-      value: "86",
-      note: "Transfer and hospital flow pressure",
-      metrics: [
-        { label: "Long-distance transfers: 19", status: "Watch" },
-        { label: "Delayed pickups: 11", status: "Off Track" },
-      ],
-      capabilitySignals: [],
-    },
-    {
-      label: "Community Paramedicine",
-      value: "64",
-      note: "Care-in-place and longitudinal engagement",
-      metrics: [
-        { label: "Transitional Care Management: 18", status: "On Track" },
-        { label: "Chronic Care Management: 27", status: "On Track" },
-        { label: "Post-discharge follow-up: 31", status: "Watch" },
-        { label: "Avoided ED visits: 22", status: "On Track" },
-      ],
-      capabilitySignals: [],
     },
   ];
 
@@ -1238,19 +1223,21 @@ export default function Home() {
                   </div>
                   <div style={styles.callMixNote}>{item.note}</div>
                 </div>
-                <div style={styles.supportList}>
-                  {item.metrics.map((metric) => (
-                    <div key={metric.label} style={styles.metricItem}>
-                      <span>{metric.label}</span>
-                      <span style={statusPillStyle(metric.status)}>
-                        {metric.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {item.metrics.length ? (
+                  <div style={styles.supportList}>
+                    {item.metrics.map((metric) => (
+                      <div key={metric.label} style={styles.metricItem}>
+                        <span>{metric.label}</span>
+                        <span style={statusPillStyle(metric.status)}>
+                          {metric.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
                 {item.capabilitySignals.length ? (
                   <div style={styles.capabilityBlock}>
-                    <div style={styles.detailLabel}>Future-facing capability signals</div>
+                    <div style={styles.detailLabel}>Capability signals</div>
                     <div style={styles.capabilityWrap}>
                       {item.capabilitySignals.map((signal) => (
                         <span key={signal.label} style={styles.capabilityPill}>
@@ -1264,10 +1251,10 @@ export default function Home() {
             ))}
           </div>
           <div style={styles.signalText}>
-            Opportunity reflects calls potentially suitable for
-            treatment-in-place, referral, alternative destination, or CP
-            follow-up when protocols, medical oversight, diagnostics, and
-            reimbursement pathways are available.
+            Disposition mix reflects operational outcomes. Capability signals
+            show the building blocks for safe treatment-in-place, alternative
+            disposition, and CP follow-up without implying those pathways apply
+            to every 911 call.
           </div>
         </div>
 
