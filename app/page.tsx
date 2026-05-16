@@ -920,23 +920,31 @@ export default function Home() {
       label: "911 Emergency",
       value: "312",
       note: "Immediate response demand",
-      metrics: ["Treat & Release: 12%", "Referred to CP Follow-up: 8%"],
+      metrics: [
+        { label: "Treat & Release: 12%", status: "On Track" },
+        { label: "Transport: 76%", status: "Watch" },
+        { label: "Lift Assist: 18", status: "Off Track" },
+        { label: "Referred to CP Follow-up: 8%", status: "On Track" },
+      ],
     },
     {
       label: "Interfacility Transport",
       value: "86",
       note: "Transfer and hospital flow pressure",
-      metrics: ["Long-distance transfers: 19", "Delayed pickups: 11"],
+      metrics: [
+        { label: "Long-distance transfers: 19", status: "Watch" },
+        { label: "Delayed pickups: 11", status: "Off Track" },
+      ],
     },
     {
       label: "Community Paramedicine",
       value: "64",
       note: "Care-in-place and longitudinal engagement",
       metrics: [
-        "Transitional Care Management: 18",
-        "Chronic Care Management: 27",
-        "Post-discharge follow-up: 31",
-        "Avoided ED visits: 22",
+        { label: "Transitional Care Management: 18", status: "On Track" },
+        { label: "Chronic Care Management: 27", status: "On Track" },
+        { label: "Post-discharge follow-up: 31", status: "Watch" },
+        { label: "Avoided ED visits: 22", status: "On Track" },
       ],
     },
   ];
@@ -993,7 +1001,7 @@ export default function Home() {
     {
       name: "Rochester / Olmsted",
       calls: 126,
-      response: "7m 11s",
+      response: "9m 41s",
       uhu: "0.58",
       mutualAid: "High",
       status: "Strained",
@@ -1047,6 +1055,22 @@ export default function Home() {
         ? "#991b1b"
         : "#166534",
     flexShrink: 0,
+  });
+
+  const statusPillStyle = (status: string) => ({
+    ...styles.statusPill,
+    background:
+      status === "On Track"
+        ? "#dcfce7"
+        : status === "Watch"
+        ? "#fef3c7"
+        : "#fee2e2",
+    color:
+      status === "On Track"
+        ? "#166534"
+        : status === "Watch"
+        ? "#92400e"
+        : "#991b1b",
   });
 
   const activeSignalData =
@@ -1201,8 +1225,11 @@ export default function Home() {
                 </div>
                 <div style={styles.supportList}>
                   {item.metrics.map((metric) => (
-                    <div key={metric} style={styles.supportItem}>
-                      {metric}
+                    <div key={metric.label} style={styles.metricItem}>
+                      <span>{metric.label}</span>
+                      <span style={statusPillStyle(metric.status)}>
+                        {metric.status}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -1222,7 +1249,9 @@ export default function Home() {
             <h2 style={styles.sectionTitle}>District Performance</h2>
           </div>
           <p style={styles.sectionIntro}>
-            Mobile-safe district view without a wide table.
+            Mobile-safe district view. Strained indicates higher demand
+            pressure, tighter unit availability, and transfer/offload friction
+            risk.
           </p>
 
           <div style={styles.stack10}>
@@ -1610,6 +1639,34 @@ const styles: any = {
     minWidth: 0,
     overflowWrap: "anywhere",
     boxSizing: "border-box",
+  },
+
+  metricItem: {
+    borderRadius: 10,
+    background: "#ffffff",
+    border: "1px solid #e5e7eb",
+    padding: "9px 10px",
+    fontSize: 13,
+    color: "#374151",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 10,
+    minWidth: 0,
+    overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  statusPill: {
+    display: "inline-flex",
+    alignItems: "center",
+    borderRadius: 999,
+    padding: "3px 8px",
+    fontSize: 11,
+    fontWeight: 900,
+    lineHeight: 1.2,
+    whiteSpace: "nowrap",
+    flexShrink: 0,
   },
 
   weatherCard: {
