@@ -9,12 +9,22 @@ type NewsItem = {
 };
 
 type WeatherAlert = {
-  id: string;
   event: string;
   areaDesc: string;
   severity: string;
-  effective: string;
   expires: string;
+};
+
+type RegionalWeatherTerritory = {
+  name: string;
+  latitude: number;
+  longitude: number;
+  temperature: number | null;
+  shortForecast: string;
+  windSpeed: string;
+  icon: string | null;
+  risk: "Clear" | "Advisory" | "Watch" | "Warning";
+  alertCount: number;
 };
 
 type AirQualityObservation = {
@@ -396,6 +406,9 @@ function CommsPanel() {
 function OperationalEnvironment({ intro }: { intro: string }) {
   const [alerts, setAlerts] = React.useState<WeatherAlert[]>([]);
   const [weatherUpdated, setWeatherUpdated] = React.useState("");
+  const [regionalWeather, setRegionalWeather] = React.useState<
+    RegionalWeatherTerritory[]
+  >([]);
   const [airQuality, setAirQuality] = React.useState<AirQualityObservation[]>(
     []
   );
@@ -403,15 +416,17 @@ function OperationalEnvironment({ intro }: { intro: string }) {
   const [activeDomain, setActiveDomain] = React.useState("Weather Alerts");
 
   React.useEffect(() => {
-    async function fetchWeatherAlerts() {
+    async function fetchRegionalWeather() {
       try {
-        const res = await fetch("/api/weather-alerts");
+        const res = await fetch("/api/regional-weather");
         const data = await res.json();
         setAlerts(data.alerts || []);
-        setWeatherUpdated(data.lastUpdated || "");
+        setRegionalWeather(data.territories || []);
+        setWeatherUpdated(data.updatedAt || "");
       } catch (err) {
         console.error(err);
         setAlerts([]);
+        setRegionalWeather([]);
         setWeatherUpdated("");
       }
     }
@@ -429,7 +444,7 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       }
     }
 
-    fetchWeatherAlerts();
+    fetchRegionalWeather();
     fetchAirQuality();
   }, []);
 
@@ -454,6 +469,14 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     (item) => item.category === "Moderate"
   ) || airQuality[0];
 
+  const weatherRiskByTerritory = regionalWeather.reduce<Record<string, string>>(
+    (acc, territory) => {
+      acc[territory.name] = territory.risk;
+      return acc;
+    },
+    {}
+  );
+
   const environmentSignals: {
     title: string;
     icon: string;
@@ -467,12 +490,12 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       value: alerts.length ? `${alerts.length} Active` : "No Active Alerts",
       note: alerts.length
         ? `${alerts[0].event} reported in the corridor.`
-        : "Live Minnesota alert feed shows no active corridor alerts.",
+        : "Live NWS forecast and alert feed is clear for these territory points.",
       territoryRisk: {
-        "Rochester / Olmsted": "Advisory",
-        "Mankato / Blue Earth": "Watch",
-        "Faribault-Owatonna": "Clear",
-        "Winona / Bluff Country": "Advisory",
+        "Rochester / Olmsted": weatherRiskByTerritory["Rochester / Olmsted"] || "Clear",
+        "Mankato / Blue Earth": weatherRiskByTerritory["Mankato / Blue Earth"] || "Clear",
+        "Faribault-Owatonna": weatherRiskByTerritory["Faribault-Owatonna"] || "Clear",
+        "Winona / Bluff Country": weatherRiskByTerritory["Winona / Bluff Country"] || "Clear",
       },
     },
     {
@@ -481,7 +504,7 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       value: mostRelevantAqi
         ? `${mostRelevantAqi.category} AQI ${mostRelevantAqi.aqi}`
         : "Moderate AQI",
-      note: "Regional air quality observations highlight smoke and respiratory risk.",
+      note: "Demo public-health signal for smoke and respiratory vulnerability.",
       territoryRisk: {
         "Rochester / Olmsted": "Good",
         "Mankato / Blue Earth": "Moderate",
@@ -493,7 +516,7 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       title: "Respiratory Trend",
       icon: "🫁",
       value: "Elevated",
-      note: "CDC-inspired surveillance language flags rising respiratory demand.",
+      note: "Prototype public-health layer for respiratory demand.",
       territoryRisk: {
         "Rochester / Olmsted": "Elevated",
         "Mankato / Blue Earth": "Moderate",
@@ -587,6 +610,50 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       </div>
 
       <div style={styles.detailCard}>
+        <div style={styles.detailHeaderRow}>
+          <div style={styles.detailLabel}>Live Weather Feed</div>
+          <span style={styles.liveBadge}>NWS</span>
+        </div>
+        <div style={{ ...styles.metaText, marginBottom: 10 }}>
+          Last updated: {formatDateTime(weatherUpdated)}
+        </div>
+        <div style={styles.supportList}>
+          {regionalWeather.map((territory) => (
+            <div key={territory.name} style={styles.weatherCard}>
+              <div style={styles.weatherTopRow}>
+                <div>
+                  <div style={styles.peerTitle}>{territory.name}</div>
+                  <div style={styles.metaText}>
+                    Wind: {territory.windSpeed}
+                  </div>
+                </div>
+                {territory.icon ? (
+                  <img
+                    src={territory.icon}
+                    alt=""
+                    style={styles.weatherIcon}
+                  />
+                ) : null}
+              </div>
+              <div style={styles.weatherValue}>
+                {territory.temperature === null
+                  ? "--"
+                  : `${territory.temperature}°F`}
+              </div>
+              <div style={styles.signalNote}>{territory.shortForecast}</div>
+              <div style={styles.weatherFooterRow}>
+                <span style={riskStyle(territory.risk)}>{territory.risk}</span>
+                <span style={styles.metaText}>
+                  {territory.alertCount} active alert
+                  {territory.alertCount === 1 ? "" : "s"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={styles.detailCard}>
         <div style={styles.detailLabel}>{activeSignal.title} by Territory</div>
         <div style={styles.detailText}>
           This domain helps leaders understand where environmental and community
@@ -613,7 +680,7 @@ function OperationalEnvironment({ intro }: { intro: string }) {
         <div style={styles.stack10}>
           {alerts.length ? (
             alerts.slice(0, 3).map((alert) => (
-              <div key={alert.id} style={styles.alertItem}>
+              <div key={`${alert.event}-${alert.expires}`} style={styles.alertItem}>
                 <div style={styles.peerTitle}>{alert.event}</div>
                 <div style={styles.metaText}>Severity: {alert.severity}</div>
                 <div style={styles.metaText}>Affected region: {alert.areaDesc}</div>
@@ -624,7 +691,7 @@ function OperationalEnvironment({ intro }: { intro: string }) {
             ))
           ) : (
             <div style={styles.signalText}>
-              No active regional weather alerts.
+              No active Minnesota weather alerts.
             </div>
           )}
         </div>
@@ -632,6 +699,9 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 
       <div style={{ ...styles.detailCard, marginTop: 10 }}>
         <div style={styles.detailLabel}>Air Quality Feed</div>
+        <div style={{ ...styles.metaText, marginBottom: 10 }}>
+          Demo public-health signal.
+        </div>
         <div style={{ ...styles.metaText, marginBottom: 10 }}>
           Last updated: {formatDateTime(airUpdated)}
         </div>
@@ -1378,6 +1448,26 @@ const styles: any = {
     boxSizing: "border-box",
   },
 
+  detailHeaderRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 8,
+    minWidth: 0,
+  },
+
+  liveBadge: {
+    borderRadius: 999,
+    padding: "4px 9px",
+    background: "#dbeafe",
+    color: "#1e40af",
+    fontSize: 11,
+    fontWeight: 900,
+    letterSpacing: 0.4,
+    flexShrink: 0,
+  },
+
   detailLabel: {
     fontSize: 12,
     fontWeight: 800,
@@ -1412,6 +1502,49 @@ const styles: any = {
     minWidth: 0,
     overflowWrap: "anywhere",
     boxSizing: "border-box",
+  },
+
+  weatherCard: {
+    borderRadius: 12,
+    background: "#ffffff",
+    border: "1px solid #dbeafe",
+    padding: 12,
+    minWidth: 0,
+    overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  weatherTopRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 10,
+    marginBottom: 8,
+    minWidth: 0,
+  },
+
+  weatherIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    flexShrink: 0,
+  },
+
+  weatherValue: {
+    fontSize: 24,
+    fontWeight: 900,
+    lineHeight: 1.1,
+    marginBottom: 6,
+    overflowWrap: "anywhere",
+  },
+
+  weatherFooterRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 10,
+    minWidth: 0,
   },
 
   alertItem: {

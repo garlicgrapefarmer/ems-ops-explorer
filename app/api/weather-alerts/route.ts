@@ -7,7 +7,7 @@ export async function GET() {
       {
         headers: {
           Accept: "application/geo+json",
-          "User-Agent": "ems-ops-explorer demo",
+          "User-Agent": "EMS Ops Explorer Demo (contact: demo@example.com)",
         },
         next: { revalidate: 300 },
       }
