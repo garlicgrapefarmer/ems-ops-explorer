@@ -826,16 +826,16 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 }
 
 function RegionalDeploymentOverview() {
-  const staticMapUrl =
-    "https://staticmap.openstreetmap.de/staticmap.php?center=44.05,-92.35&zoom=8&size=1200x700&maptype=mapnik";
+  const mapEmbedUrl =
+    "https://www.google.com/maps?q=Rochester%20Mankato%20Owatonna%20Faribault%20Winona%20Minnesota&z=8&output=embed";
 
   const resources = [
     { label: "A1", type: "911 Ambulance", icon: "🚑", top: "43%", left: "61%" },
     { label: "A2", type: "911 Ambulance", icon: "🚑", top: "55%", left: "28%" },
     { label: "A3", type: "911 Ambulance", icon: "🚑", top: "57%", left: "48%" },
-    { label: "CP1", type: "CP SUV", icon: "▣", top: "49%", left: "64%" },
-    { label: "CP2", type: "CP SUV", icon: "▣", top: "61%", left: "76%" },
-    { label: "S1", type: "Supervisor", icon: "◆", top: "52%", left: "54%" },
+    { label: "CP1", type: "CP SUV", icon: "🚙", top: "49%", left: "64%" },
+    { label: "CP2", type: "CP SUV", icon: "🚙", top: "61%", left: "76%" },
+    { label: "S1", type: "Supervisor", icon: "👤", top: "52%", left: "54%" },
   ];
 
   const territories = [
@@ -851,16 +851,17 @@ function RegionalDeploymentOverview() {
         <h2 style={styles.sectionTitle}>Illustrative Regional Deployment Overview</h2>
       </div>
       <p style={styles.sectionIntro}>
-        Static Southern Minnesota resource distribution for territory-based
-        awareness. Not live AVL, CAD, or real-time vehicle tracking.
+        Southern Minnesota regional map backdrop for territory-based awareness.
+        Not live AVL, CAD, or real-time vehicle tracking.
       </p>
 
       <div style={styles.mapShell}>
-        <img
-          src={staticMapUrl}
-          alt="Static map of Southern Minnesota regional geography"
-          referrerPolicy="no-referrer"
-          style={styles.staticMapImage}
+        <iframe
+          src={mapEmbedUrl}
+          title="Southern Minnesota regional map"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          style={styles.mapFrame}
         />
         <div style={styles.mapSoftOverlay} />
 
@@ -887,8 +888,8 @@ function RegionalDeploymentOverview() {
 
       <div style={styles.mapLegend}>
         <span style={styles.legendItem}>🚑 911 ambulances</span>
-        <span style={styles.legendItem}>▣ CP SUVs</span>
-        <span style={styles.legendItem}>◆ Supervisor</span>
+        <span style={styles.legendItem}>🚙 CP SUVs</span>
+        <span style={styles.legendItem}>👤 Supervisor</span>
       </div>
       <div style={{ ...styles.metaText, marginTop: 8 }}>
         Demo resource placement shown for operational concept only.
@@ -1660,13 +1661,14 @@ const styles: any = {
     boxSizing: "border-box",
   },
 
-  staticMapImage: {
+  mapFrame: {
     position: "absolute",
     inset: 0,
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    border: 0,
     filter: "saturate(0.72) contrast(0.92) brightness(1.03)",
+    pointerEvents: "none",
   },
 
   mapSoftOverlay: {
