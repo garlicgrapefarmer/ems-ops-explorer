@@ -28,11 +28,11 @@ type Role = "Chief" | "Operations" | "Medic" | "Community";
 
 type Topic =
   | "all"
-  | "bodyworn"
-  | "documentation"
-  | "safety"
+  | "chief"
   | "operations"
-  | "quality";
+  | "medic"
+  | "community"
+  | "sustainability";
 
 function CommsPanel() {
   const [lane, setLane] = React.useState<"news" | "research">("news");
@@ -60,182 +60,154 @@ function CommsPanel() {
   > = {
     all: [
       {
-        title: "Documentation burden affects more than paperwork",
+        title: "Rural EMS sustainability is a system signal",
         summary:
-          "Across prehospital and adjacent healthcare settings, documentation load is increasingly viewed as an operational drag, not just a clerical nuisance.",
+          "Leadership teams increasingly need to see response pressure, transfers, community paramedicine, and staffing as one connected operating picture.",
         whyItMatters:
-          "Chiefs should think about documentation as a contributor to availability, morale, and cognitive overload in the field.",
+          "The demo should show different perspectives on the same system, not disconnected scorecards.",
       },
       {
-        title: "Responder safety is a leadership signal",
+        title: "Care-in-place changes the sustainability conversation",
         summary:
-          "Research and field learning continue to reinforce that violence exposure, near-misses, and scene-risk patterns deserve executive visibility.",
+          "Community paramedicine, follow-up, and avoided ED use can reduce avoidable transport while supporting vulnerable patients closer to home.",
         whyItMatters:
-          "Safety should sit beside operations and quality, not off to the side as a separate conversation.",
+          "Care-in-place belongs beside response and transfer metrics in a rural command view.",
       },
       {
-        title: "Handoff friction shapes system performance",
+        title: "Transfer and offload friction shape rural readiness",
         summary:
           "Offload and transition delays continue to matter because they erode recovery capacity and distort downstream response performance.",
         whyItMatters:
           "Even a system with acceptable top-line metrics can still feel strained if crews are losing time at handoff.",
       },
       {
-        title: "Learning systems outperform blame systems",
+        title: "Public health signals add operational context",
         summary:
-          "The strongest improvement cultures connect incident review, quality surveillance, and leadership feedback loops.",
+          "Weather, air quality, respiratory illness, and access risk help leaders explain why demand feels different from one territory to another.",
         whyItMatters:
-          "A chief-facing product should support learning and pattern recognition, not just retrospective reporting.",
+          "Live environmental and public health feeds make prototype EMS metrics more credible.",
       },
     ],
-    bodyworn: [
+    chief: [
       {
-        title: "Body-worn tools land best when framed as workflow support",
+        title: "Regional sustainability needs executive visibility",
         summary:
-          "The strongest case is usually not simple recording. It is safety, review, timeline reconstruction, and reduced duplicate work.",
+          "Chiefs need a single view of strain, mutual aid exposure, care-in-place activity, and territory-level risk.",
         whyItMatters:
-          "This is the wedge that makes body-worn technology feel practical rather than gimmicky.",
+          "Governance conversations improve when leaders can see both operational pressure and sustainability levers.",
       },
       {
-        title: "Video and audio strengthen post-event understanding",
+        title: "Governance depends on shared operating facts",
         summary:
-          "Reviewable scene context can improve supervision, training, and quality conversations when used carefully.",
+          "Multi-county EMS regions need common language for risk, transfers, staffing, and public health context.",
         whyItMatters:
-          "Chiefs gain a better view of what truly happened, not just what coded fields imply happened.",
+          "A shared dashboard can support policy, funding, and partner alignment.",
       },
       {
-        title: "Governance drives adoption",
+        title: "Care-in-place economics are strategic",
         summary:
-          "Programs succeed when privacy, trust, policy, field value, and executive intent are aligned early.",
+          "Avoided ED visits, transitional care, and chronic care management can shift EMS from pure response cost center toward sustainable service line.",
         whyItMatters:
-          "Adoption risk is often less technical than organizational.",
-      },
-      {
-        title: "Timeline fidelity may be the hidden prize",
-        summary:
-          "Body-worn and fixed-video environments become more valuable when they help reconstruct sequence, interruptions, and decision burden.",
-        whyItMatters:
-          "That supports both safety learning and operational intelligence.",
-      },
-    ],
-    documentation: [
-      {
-        title: "Ambient documentation is gaining credibility",
-        summary:
-          "Interest is strongest where it reduces charting duplication and lowers end-of-shift documentation drag.",
-        whyItMatters:
-          "This is one of the cleanest AI use cases for paramedic leadership to understand and sponsor.",
-      },
-      {
-        title: "AI drafting works best with human review",
-        summary:
-          "The most credible pathway is draft support plus clinician oversight, not fully automated record creation.",
-        whyItMatters:
-          "That balance protects quality while still reducing burden.",
-      },
-      {
-        title: "Documentation is also a cognitive-load problem",
-        summary:
-          "It competes with memory, attention, and recovery for field clinicians operating in imperfect environments.",
-        whyItMatters:
-          "Reducing documentation friction can improve both workforce experience and system flow.",
-      },
-      {
-        title: "ePCR burden affects operations indirectly",
-        summary:
-          "Time spent documenting influences unit availability and can worsen perceived system strain.",
-        whyItMatters:
-          "Chiefs should see documentation as an operational lever, not just a compliance function.",
-      },
-    ],
-    safety: [
-      {
-        title: "Violence exposure is not an edge case",
-        summary:
-          "Assaults, threats, and scene-risk patterns continue to show up as recurring themes in field safety discussions.",
-        whyItMatters:
-          "A leadership view that ignores safety intelligence is incomplete.",
-      },
-      {
-        title: "Near-miss visibility matters",
-        summary:
-          "Organizations improve faster when they can see recurring weak signals before catastrophic events occur.",
-        whyItMatters:
-          "Trend detection is often more valuable than isolated storytelling.",
-      },
-      {
-        title: "Safety belongs in executive operations",
-        summary:
-          "The strongest safety conversations happen when leadership sees safety alongside geography, dispatch, and workload.",
-        whyItMatters:
-          "That supports smarter intervention instead of generic awareness.",
-      },
-      {
-        title: "Field confidence is shaped by what leaders can see",
-        summary:
-          "Safety culture strengthens when crews believe leaders can understand context, not just outcomes.",
-        whyItMatters:
-          "Visibility and trust are linked.",
+          "Chiefs need to see CP activity as a sustainability signal, not a side program.",
       },
     ],
     operations: [
       {
-        title: "Late calls are a leading signal",
+        title: "Transfer delays consume regional readiness",
         summary:
-          "Late-call burden is often one of the clearest visible markers of strain before broader deterioration appears.",
+          "Interfacility and hospital handoff delays reduce unit availability even when call volume looks manageable.",
         whyItMatters:
-          "Chiefs can use it as an early warning, not just a lagging metric.",
+          "Operations leaders need early warning before transfer pressure cascades into late calls.",
       },
       {
-        title: "Mutual aid acts like a pressure-release valve",
+        title: "Response pressure is uneven by territory",
         summary:
-          "Increasing reliance on mutual aid often reflects deeper availability and coverage problems.",
+          "Rural corridors can experience high pressure in one area while neighboring territories remain stable.",
         whyItMatters:
-          "It should be interpreted as signal, not just event count.",
+          "A stacked territory view helps leaders target staging, coverage, and mutual aid decisions.",
       },
       {
-        title: "Command views must compress complexity",
+        title: "Staffing strain is an availability problem",
         summary:
-          "Leadership tools are more useful when they summarize what matters instead of reproducing every feed.",
+          "Staffing pressure shows up through response reliability, turnaround burden, and missed recovery time.",
         whyItMatters:
-          "Chiefs need fast understanding, not another login-heavy reporting environment.",
-      },
-      {
-        title: "Operational drag is usually multi-factor",
-        summary:
-          "Dispatch, handoff, availability, geography, and workload often interact rather than fail independently.",
-        whyItMatters:
-          "The best dashboards make those relationships legible.",
+          "Operations views should connect staffing strain to unit availability, not just shift rosters.",
       },
     ],
-    quality: [
+    medic: [
       {
-        title: "Sentinel review remains essential",
+        title: "Field safety needs real context",
         summary:
-          "High-value quality monitoring still centers on clinically and operationally meaningful events, not just broad scorecards.",
+          "Weather, long transports, turnaround burden, and high-utilizer patterns all affect what crews experience in the field.",
         whyItMatters:
-          "This keeps leadership attention on what truly matters.",
+          "Medics need practical awareness, not only executive summaries.",
       },
       {
-        title: "Quality signals strengthen when paired with operations",
+        title: "Workload is more than call count",
         summary:
-          "Reviewing quality apart from delay, staffing, geography, and workload often hides the real story.",
+          "A day with transfers, late calls, documentation burden, and repeat low-acuity demand can feel heavier than raw volume suggests.",
         whyItMatters:
-          "Executives need integrated context, not separate silos.",
+          "The field view should make operational burden visible without blaming crews.",
       },
       {
-        title: "Improvement cultures rely on pattern recognition",
+        title: "Documentation burden affects recovery",
         summary:
-          "Single events matter, but repeated weak signals usually tell the more strategic story.",
+          "Charting and handoff work compete with reset time between calls, especially during strained shifts.",
         whyItMatters:
-          "That is where a chief-facing product becomes genuinely valuable.",
+          "A medic-centered dashboard should connect documentation to workload and availability.",
+      },
+    ],
+    community: [
+      {
+        title: "Access to care is a readiness measure",
+        summary:
+          "Rural EMS dashboards can help public stakeholders understand where geography, transport distance, and community health needs affect access.",
+        whyItMatters:
+          "Transparency improves when access is explained in plain operational terms.",
       },
       {
-        title: "Leadership needs usable summaries",
+        title: "Aging in place depends on follow-up capacity",
         summary:
-          "Quality intelligence lands best when translated into a few plain-language implications and watch items.",
+          "Post-discharge follow-up, chronic care management, and CP referrals can help older adults remain safely at home.",
         whyItMatters:
-          "That is what enables action.",
+          "Community paramedicine is a community readiness tool, not just an EMS add-on.",
+      },
+      {
+        title: "Community paramedicine supports trust",
+        summary:
+          "Care-in-place programs make EMS visible between emergencies and can reduce avoidable ED use.",
+        whyItMatters:
+          "Public stakeholders can see how EMS contributes to longitudinal health readiness.",
+      },
+    ],
+    sustainability: [
+      {
+        title: "TCM can turn follow-up into sustainability",
+        summary:
+          "Transitional Care Management creates structured post-discharge touchpoints that can reduce avoidable utilization.",
+        whyItMatters:
+          "TCM makes care-in-place measurable and potentially revenue-supported.",
+      },
+      {
+        title: "CCM supports longitudinal engagement",
+        summary:
+          "Chronic Care Management can help EMS partners stay connected to patients with recurring needs between acute events.",
+        whyItMatters:
+          "CCM links patient stability with fewer avoidable responses and transports.",
+      },
+      {
+        title: "Avoidable ED use is an operating signal",
+        summary:
+          "Avoided ED visits can show where CP services are reducing pressure on ambulances and hospitals.",
+        whyItMatters:
+          "Sustainability improves when EMS can prove capacity saved, not only calls answered.",
+      },
+      {
+        title: "Revenue-supported CP services need proof",
+        summary:
+          "Programs are easier to sustain when TCM, CCM, follow-up, and avoided utilization are tracked together.",
+        whyItMatters:
+          "A credible demo should connect CP activity to both community benefit and financial durability.",
       },
     ],
   };
@@ -243,11 +215,11 @@ function CommsPanel() {
   const filteredNews = React.useMemo(() => {
     const words: Record<Topic, string[]> = {
       all: ["ems", "paramedic", "ambulance", "prehospital"],
-      bodyworn: ["body", "camera", "bodycam", "video", "audio"],
-      documentation: ["documentation", "chart", "scribe", "note", "ambient"],
-      safety: ["safety", "violence", "assault", "risk", "injury"],
+      chief: ["chief", "leadership", "regional", "funding", "governance"],
       operations: ["operations", "response", "offload", "dispatch", "mutual"],
-      quality: ["quality", "sentinel", "review", "outcome", "improvement"],
+      medic: ["medic", "paramedic", "safety", "workload", "documentation"],
+      community: ["community", "access", "aging", "public", "health"],
+      sustainability: ["sustainability", "revenue", "avoidable", "chronic", "transitional"],
     };
 
     if (topic === "all") {
@@ -359,11 +331,11 @@ function CommsPanel() {
       <div style={styles.chipWrap}>
         {[
           ["all", "All"],
-          ["bodyworn", "Body Worn"],
-          ["documentation", "Documentation"],
-          ["safety", "Safety"],
+          ["chief", "Chief"],
           ["operations", "Operations"],
-          ["quality", "Quality"],
+          ["medic", "Medic"],
+          ["community", "Community"],
+          ["sustainability", "Sustainability"],
         ].map(([value, label]) => (
           <button
             key={value}
@@ -461,7 +433,12 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     fetchAirQuality();
   }, []);
 
-  const territories = ["River Valley", "Prairie Lakes", "South Central", "Bluff Country"];
+  const territories = [
+    "Rochester / Olmsted",
+    "Mankato / Blue Earth",
+    "Faribault-Owatonna",
+    "Winona / Bluff Country",
+  ];
 
   const formatDateTime = (value: string) =>
     value
@@ -479,56 +456,61 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 
   const environmentSignals: {
     title: string;
+    icon: string;
     value: string;
     note: string;
     territoryRisk: Record<string, string>;
   }[] = [
     {
       title: "Weather Alerts",
+      icon: "⛈️",
       value: alerts.length ? `${alerts.length} Active` : "No Active Alerts",
       note: alerts.length
         ? `${alerts[0].event} reported in the corridor.`
         : "Live Minnesota alert feed shows no active corridor alerts.",
       territoryRisk: {
-        "River Valley": alerts.length ? "Watch" : "Clear",
-        "Prairie Lakes": "Clear",
-        "South Central": alerts.length ? "Advisory" : "Clear",
-        "Bluff Country": alerts.length ? "Watch" : "Clear",
+        "Rochester / Olmsted": "Advisory",
+        "Mankato / Blue Earth": "Watch",
+        "Faribault-Owatonna": "Clear",
+        "Winona / Bluff Country": "Advisory",
       },
     },
     {
       title: "Air Quality",
+      icon: "🌫️",
       value: mostRelevantAqi
         ? `${mostRelevantAqi.category} AQI ${mostRelevantAqi.aqi}`
         : "Moderate AQI",
       note: "Regional air quality observations highlight smoke and respiratory risk.",
       territoryRisk: {
-        "River Valley": "Good",
-        "Prairie Lakes": "Moderate",
-        "South Central": "Moderate",
-        "Bluff Country": "Good",
+        "Rochester / Olmsted": "Good",
+        "Mankato / Blue Earth": "Moderate",
+        "Faribault-Owatonna": "Moderate",
+        "Winona / Bluff Country": "Good",
       },
     },
     {
       title: "Respiratory Trend",
+      icon: "🫁",
       value: "Elevated",
       note: "CDC-inspired surveillance language flags rising respiratory demand.",
       territoryRisk: {
-        "River Valley": "Elevated",
-        "Prairie Lakes": "Moderate",
-        "South Central": "Elevated",
-        "Bluff Country": "Stable",
+        "Rochester / Olmsted": "Elevated",
+        "Mankato / Blue Earth": "Moderate",
+        "Faribault-Owatonna": "Elevated",
+        "Winona / Bluff Country": "Stable",
       },
     },
     {
       title: "Rural Access",
+      icon: "🚑",
       value: "Watch",
       note: "Long transport distances and transfer delays increase regional coverage risk.",
       territoryRisk: {
-        "River Valley": "Watch",
-        "Prairie Lakes": "Stable",
-        "South Central": "Watch",
-        "Bluff Country": "Strained",
+        "Rochester / Olmsted": "Stable",
+        "Mankato / Blue Earth": "Watch",
+        "Faribault-Owatonna": "Watch",
+        "Winona / Bluff Country": "Strained",
       },
     },
   ];
@@ -577,10 +559,9 @@ function OperationalEnvironment({ intro }: { intro: string }) {
         <h2 style={styles.sectionTitle}>Operational Environment</h2>
       </div>
       <p style={styles.sectionIntro}>{intro}</p>
-      <p style={styles.sectionIntro}>
-        Live environmental/public health feeds paired with operational prototype
-        metrics for a Southern Minnesota rural EMS corridor.
-      </p>
+      <div style={styles.liveFeedLine}>
+        Live public feeds + prototype EMS operating metrics
+      </div>
 
       <div style={styles.signalGrid}>
         {environmentSignals.map((signal) => (
@@ -595,7 +576,10 @@ function OperationalEnvironment({ intro }: { intro: string }) {
                   : "1px solid #e5e7eb",
             }}
           >
-            <div style={styles.signalLabel}>{signal.title}</div>
+            <div style={styles.domainHeader}>
+              <span style={styles.domainIcon}>{signal.icon}</span>
+              <div style={styles.signalLabel}>{signal.title}</div>
+            </div>
             <div style={styles.kpiValue}>{signal.value}</div>
             <div style={styles.signalNote}>{signal.note}</div>
           </button>
@@ -629,7 +613,7 @@ function OperationalEnvironment({ intro }: { intro: string }) {
         <div style={styles.stack10}>
           {alerts.length ? (
             alerts.slice(0, 3).map((alert) => (
-              <div key={alert.id} style={styles.supportItem}>
+              <div key={alert.id} style={styles.alertItem}>
                 <div style={styles.peerTitle}>{alert.event}</div>
                 <div style={styles.metaText}>Severity: {alert.severity}</div>
                 <div style={styles.metaText}>Affected region: {alert.areaDesc}</div>
@@ -818,7 +802,7 @@ export default function Home() {
         "Demand is outrunning timely unit availability during peak periods. The issue is visible enough to affect service confidence even though top-line performance still appears acceptable.",
       support: [
         "Late calls >10 min: 18%",
-        "Most affected territory: South Central",
+        "Most affected territory: Mankato / Blue Earth",
         "Direction versus prior week: Up",
       ],
     },
@@ -856,7 +840,7 @@ export default function Home() {
 
   const districtRows = [
     {
-      name: "River Valley",
+      name: "Rochester / Olmsted",
       calls: 126,
       response: "7m 11s",
       uhu: "0.58",
@@ -864,7 +848,7 @@ export default function Home() {
       status: "Strained",
     },
     {
-      name: "Prairie Lakes",
+      name: "Mankato / Blue Earth",
       calls: 81,
       response: "8m 42s",
       uhu: "0.44",
@@ -872,7 +856,7 @@ export default function Home() {
       status: "Stable",
     },
     {
-      name: "South Central",
+      name: "Faribault-Owatonna",
       calls: 92,
       response: "9m 28s",
       uhu: "0.49",
@@ -880,7 +864,7 @@ export default function Home() {
       status: "Watch",
     },
     {
-      name: "Bluff Country",
+      name: "Winona / Bluff Country",
       calls: 113,
       response: "8m 02s",
       uhu: "0.41",
@@ -1262,6 +1246,21 @@ const styles: any = {
     overflowWrap: "anywhere",
   },
 
+  liveFeedLine: {
+    border: "1px solid #d1d5db",
+    background: "#f8fafc",
+    borderRadius: 12,
+    padding: "9px 11px",
+    color: "#374151",
+    fontSize: 13,
+    fontWeight: 800,
+    lineHeight: 1.35,
+    marginBottom: 12,
+    minWidth: 0,
+    overflowWrap: "anywhere",
+    boxSizing: "border-box",
+  },
+
   pulseRow: {
     display: "grid",
     gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
@@ -1320,6 +1319,20 @@ const styles: any = {
     lineHeight: 1.2,
     minWidth: 0,
     overflowWrap: "anywhere",
+  },
+
+  domainHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
+    minWidth: 0,
+  },
+
+  domainIcon: {
+    fontSize: 20,
+    lineHeight: 1,
+    flexShrink: 0,
   },
 
   signalLabel: {
@@ -1393,6 +1406,19 @@ const styles: any = {
     borderRadius: 10,
     background: "#ffffff",
     border: "1px solid #e5e7eb",
+    padding: "10px 12px",
+    fontSize: 13,
+    color: "#374151",
+    minWidth: 0,
+    overflowWrap: "anywhere",
+    boxSizing: "border-box",
+  },
+
+  alertItem: {
+    borderRadius: 12,
+    background: "#fff7ed",
+    border: "1px solid #fed7aa",
+    borderLeft: "5px solid #ea580c",
     padding: "10px 12px",
     fontSize: 13,
     color: "#374151",

@@ -15,25 +15,25 @@ export async function GET() {
       lastUpdated: new Date().toISOString(),
       observations: [
         {
-          area: "River Valley",
+          area: "Rochester / Olmsted",
           category: "Good",
           aqi: 42,
           pollutant: "PM2.5",
         },
         {
-          area: "Prairie Lakes",
+          area: "Mankato / Blue Earth",
           category: "Moderate",
           aqi: 61,
           pollutant: "PM2.5",
         },
         {
-          area: "South Central",
+          area: "Faribault-Owatonna",
           category: "Moderate",
           aqi: 68,
           pollutant: "Ozone",
         },
         {
-          area: "Bluff Country",
+          area: "Winona / Bluff Country",
           category: "Good",
           aqi: 39,
           pollutant: "PM2.5",
