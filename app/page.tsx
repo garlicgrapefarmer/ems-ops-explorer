@@ -825,6 +825,69 @@ function OperationalEnvironment({ intro }: { intro: string }) {
   );
 }
 
+function RegionalDeploymentOverview() {
+  const resources = [
+    { label: "A1", type: "911 Ambulance", icon: "🚑", top: "30%", left: "59%" },
+    { label: "A2", type: "911 Ambulance", icon: "🚑", top: "54%", left: "35%" },
+    { label: "A3", type: "911 Ambulance", icon: "🚑", top: "62%", left: "61%" },
+    { label: "CP1", type: "CP SUV", icon: "▣", top: "38%", left: "66%" },
+    { label: "CP2", type: "CP SUV", icon: "▣", top: "70%", left: "76%" },
+    { label: "S1", type: "Supervisor", icon: "◆", top: "46%", left: "48%" },
+  ];
+
+  const territories = [
+    { name: "Mankato / Blue Earth", style: { top: "47%", left: "15%" } },
+    { name: "Faribault-Owatonna", style: { top: "55%", left: "44%" } },
+    { name: "Rochester / Olmsted", style: { top: "38%", left: "61%" } },
+    { name: "Winona / Bluff Country", style: { top: "66%", left: "68%" } },
+  ];
+
+  return (
+    <div style={styles.panel}>
+      <div style={styles.panelHeaderRow}>
+        <h2 style={styles.sectionTitle}>Regional Deployment Overview</h2>
+      </div>
+      <p style={styles.sectionIntro}>
+        Illustrative regional resource distribution for territory-based
+        awareness. Not live AVL or dispatch tracking.
+      </p>
+
+      <div style={styles.mapShell}>
+        <div style={styles.mapBandNorth} />
+        <div style={styles.mapBandSouth} />
+        <div style={styles.mapRouteOne} />
+        <div style={styles.mapRouteTwo} />
+
+        {territories.map((territory) => (
+          <div
+            key={territory.name}
+            style={{ ...styles.mapTerritoryLabel, ...territory.style }}
+          >
+            {territory.name}
+          </div>
+        ))}
+
+        {resources.map((resource) => (
+          <div
+            key={resource.label}
+            style={{ ...styles.resourcePin, top: resource.top, left: resource.left }}
+            title={`${resource.type} ${resource.label}`}
+          >
+            <span style={styles.resourceIcon}>{resource.icon}</span>
+            <span style={styles.resourceLabel}>{resource.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div style={styles.mapLegend}>
+        <span style={styles.legendItem}>🚑 911 ambulances</span>
+        <span style={styles.legendItem}>▣ CP SUVs</span>
+        <span style={styles.legendItem}>◆ Supervisor</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [role, setRole] = React.useState<Role>("Chief");
   const [pulse, setPulse] = React.useState<number | null>(null);
@@ -1155,6 +1218,8 @@ export default function Home() {
         </div>
 
         <OperationalEnvironment intro={activeRoleCopy.environmentIntro} />
+
+        <RegionalDeploymentOverview />
 
         <div style={styles.panel}>
           <div style={styles.panelHeaderRow}>
@@ -1532,6 +1597,115 @@ const styles: any = {
     marginRight: 8,
     color: "#111827",
     fontWeight: 900,
+  },
+
+  mapShell: {
+    position: "relative",
+    minHeight: 260,
+    borderRadius: 16,
+    border: "1px solid #dbe3ea",
+    background: "#eef3f1",
+    overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  mapBandNorth: {
+    position: "absolute",
+    inset: "0 0 auto 0",
+    height: "46%",
+    background: "rgba(220, 232, 226, 0.9)",
+  },
+
+  mapBandSouth: {
+    position: "absolute",
+    inset: "46% 0 0 0",
+    background: "rgba(232, 236, 230, 0.9)",
+  },
+
+  mapRouteOne: {
+    position: "absolute",
+    top: "50%",
+    left: "12%",
+    width: "76%",
+    height: 2,
+    background: "rgba(107, 114, 128, 0.28)",
+    transform: "rotate(-8deg)",
+    transformOrigin: "center",
+  },
+
+  mapRouteTwo: {
+    position: "absolute",
+    top: "58%",
+    left: "34%",
+    width: "48%",
+    height: 2,
+    background: "rgba(107, 114, 128, 0.22)",
+    transform: "rotate(31deg)",
+    transformOrigin: "center",
+  },
+
+  mapTerritoryLabel: {
+    position: "absolute",
+    transform: "translate(-50%, -50%)",
+    color: "#475569",
+    fontSize: 11,
+    fontWeight: 800,
+    lineHeight: 1.2,
+    textAlign: "center",
+    maxWidth: 105,
+    padding: "4px 7px",
+    borderRadius: 999,
+    background: "rgba(255, 255, 255, 0.72)",
+    border: "1px solid rgba(203, 213, 225, 0.9)",
+    boxSizing: "border-box",
+  },
+
+  resourcePin: {
+    position: "absolute",
+    transform: "translate(-50%, -50%)",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    padding: "5px 7px",
+    borderRadius: 999,
+    background: "#ffffff",
+    border: "1px solid #cbd5e1",
+    boxShadow: "0 1px 2px rgba(15, 23, 42, 0.12)",
+    color: "#111827",
+    fontSize: 11,
+    fontWeight: 900,
+    lineHeight: 1,
+    whiteSpace: "nowrap",
+    boxSizing: "border-box",
+  },
+
+  resourceIcon: {
+    fontSize: 13,
+    lineHeight: 1,
+  },
+
+  resourceLabel: {
+    fontSize: 10,
+    letterSpacing: 0.2,
+  },
+
+  mapLegend: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 10,
+    minWidth: 0,
+  },
+
+  legendItem: {
+    borderRadius: 999,
+    background: "#f8fafc",
+    border: "1px solid #e5e7eb",
+    color: "#475569",
+    padding: "5px 8px",
+    fontSize: 11,
+    fontWeight: 800,
+    lineHeight: 1.2,
   },
 
   signalCard: {
