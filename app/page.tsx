@@ -921,10 +921,17 @@ export default function Home() {
       value: "312",
       note: "Immediate response demand",
       metrics: [
-        { label: "Treat & Release: 12%", status: "On Track" },
+        { label: "Care-in-Place Opportunity: 28%", status: "Building Capacity" },
         { label: "Transport: 76%", status: "Watch" },
         { label: "Lift Assist: 18", status: "Off Track" },
-        { label: "Referred to CP Follow-up: 8%", status: "On Track" },
+        { label: "CP Follow-up Opportunity: 14%", status: "Building Capacity" },
+      ],
+      capabilitySignals: [
+        { label: "i-STAT availability", status: "Developing" },
+        { label: "POCUS availability", status: "Developing" },
+        { label: "Telehealth medical control", status: "Building" },
+        { label: "Alternate destination pathways", status: "Developing" },
+        { label: "CP follow-up capacity", status: "Building" },
       ],
     },
     {
@@ -935,6 +942,7 @@ export default function Home() {
         { label: "Long-distance transfers: 19", status: "Watch" },
         { label: "Delayed pickups: 11", status: "Off Track" },
       ],
+      capabilitySignals: [],
     },
     {
       label: "Community Paramedicine",
@@ -946,6 +954,7 @@ export default function Home() {
         { label: "Post-discharge follow-up: 31", status: "Watch" },
         { label: "Avoided ED visits: 22", status: "On Track" },
       ],
+      capabilitySignals: [],
     },
   ];
 
@@ -1062,13 +1071,19 @@ export default function Home() {
     background:
       status === "On Track"
         ? "#dcfce7"
-        : status === "Watch"
+        : status === "Watch" ||
+          status === "Building Capacity" ||
+          status === "Building" ||
+          status === "Developing"
         ? "#fef3c7"
         : "#fee2e2",
     color:
       status === "On Track"
         ? "#166534"
-        : status === "Watch"
+        : status === "Watch" ||
+          status === "Building Capacity" ||
+          status === "Building" ||
+          status === "Developing"
         ? "#92400e"
         : "#991b1b",
   });
@@ -1233,12 +1248,26 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
+                {item.capabilitySignals.length ? (
+                  <div style={styles.capabilityBlock}>
+                    <div style={styles.detailLabel}>Future-facing capability signals</div>
+                    <div style={styles.capabilityWrap}>
+                      {item.capabilitySignals.map((signal) => (
+                        <span key={signal.label} style={styles.capabilityPill}>
+                          {signal.label}: {signal.status}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
           <div style={styles.signalText}>
-            Care-in-place and longitudinal engagement reduce avoidable transport,
-            protect unit availability, and improve rural sustainability.
+            Opportunity reflects calls potentially suitable for
+            treatment-in-place, referral, alternative destination, or CP
+            follow-up when protocols, medical oversight, diagnostics, and
+            reimbursement pathways are available.
           </div>
         </div>
 
@@ -1667,6 +1696,33 @@ const styles: any = {
     lineHeight: 1.2,
     whiteSpace: "nowrap",
     flexShrink: 0,
+  },
+
+  capabilityBlock: {
+    borderTop: "1px solid #e5e7eb",
+    marginTop: 10,
+    paddingTop: 10,
+    minWidth: 0,
+  },
+
+  capabilityWrap: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 6,
+    minWidth: 0,
+  },
+
+  capabilityPill: {
+    borderRadius: 999,
+    background: "#fef3c7",
+    color: "#92400e",
+    border: "1px solid #fde68a",
+    padding: "4px 8px",
+    fontSize: 11,
+    fontWeight: 800,
+    lineHeight: 1.2,
+    maxWidth: "100%",
+    overflowWrap: "anywhere",
   },
 
   weatherCard: {
