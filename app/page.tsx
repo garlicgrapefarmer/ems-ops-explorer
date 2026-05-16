@@ -921,10 +921,14 @@ export default function Home() {
       value: "100%",
       note: "911 outcomes",
       metrics: [
-        { label: "Transported: 68%", status: "On Track" },
-        { label: "Treated On Scene: 14%", status: "On Track" },
-        { label: "Alternative Disposition: 6%", status: "Watch" },
-        { label: "Community Paramedicine Follow-Up: 12%", status: "Watch" },
+        { label: "Transport to Emergency Department: 74%", status: "On Track" },
+        { label: "Transport to Alternative Care Setting: 6%", status: "Watch" },
+        {
+          label: "Treated On Scene Without Transport: 20%",
+          status: "On Track",
+          subLabel: "CP Follow-Up Scheduled: 12%",
+          subStatus: "Watch",
+        },
       ],
       capabilitySignals: [],
     },
@@ -1227,10 +1231,24 @@ export default function Home() {
                   <div style={styles.supportList}>
                     {item.metrics.map((metric) => (
                       <div key={metric.label} style={styles.metricItem}>
-                        <span>{metric.label}</span>
-                        <span style={statusPillStyle(metric.status)}>
-                          {metric.status}
-                        </span>
+                        <div style={styles.metricTextBlock}>
+                          <span>{metric.label}</span>
+                          {metric.subLabel ? (
+                            <div style={styles.metricSubText}>
+                              {metric.subLabel}
+                            </div>
+                          ) : null}
+                        </div>
+                        <div style={styles.metricStatusStack}>
+                          <span style={statusPillStyle(metric.status)}>
+                            {metric.status}
+                          </span>
+                          {metric.subStatus ? (
+                            <span style={statusPillStyle(metric.subStatus)}>
+                              {metric.subStatus}
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1671,6 +1689,27 @@ const styles: any = {
     minWidth: 0,
     overflow: "hidden",
     boxSizing: "border-box",
+  },
+
+  metricTextBlock: {
+    minWidth: 0,
+    display: "grid",
+    gap: 4,
+  },
+
+  metricSubText: {
+    color: "#6b7280",
+    fontSize: 12,
+    lineHeight: 1.3,
+    paddingLeft: 10,
+    borderLeft: "2px solid #d1d5db",
+  },
+
+  metricStatusStack: {
+    display: "grid",
+    justifyItems: "end",
+    gap: 4,
+    flexShrink: 0,
   },
 
   statusPill: {
