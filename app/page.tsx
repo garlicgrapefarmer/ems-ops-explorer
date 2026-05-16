@@ -269,65 +269,24 @@ function CommsPanel() {
       <div style={styles.panelHeaderRow}>
         <h2 style={styles.sectionTitle}>Global Field Signals</h2>
       </div>
-      <section style={styles.section}>
-        <div style={styles.sectionHeaderRow}>
-          <div>
-            <div style={styles.sectionEyebrow}>LIVE OPERATIONAL ENVIRONMENT</div>
-            <h2 style={styles.sectionTitle}>Regional System Pulse</h2>
-          </div>
-
-          <div
-            style={{
-              padding: "8px 14px",
-              borderRadius: 999,
-              background: "#122033",
-              color: "#d7e3f4",
-              fontSize: 12,
-              fontWeight: 700,
-            }}
-          >
-            RURAL OPS VIEW
-          </div>
-        </div>
-
-        <div style={styles.signalGrid}>
-          <div style={styles.signalCard}>
-            <div style={styles.signalLabel}>Respiratory Trend</div>
-            <div style={styles.signalValue}>↑ Moderate</div>
-            <div style={styles.signalNote}>
-              Regional respiratory activity elevated across schools and LTC.
-            </div>
-          </div>
-
-          <div style={styles.signalCard}>
-            <div style={styles.signalLabel}>Transfer Delays</div>
-            <div style={styles.signalValue}>42 min avg</div>
-            <div style={styles.signalNote}>
-              Critical access hospital transfers trending above baseline.
-            </div>
-          </div>
-
-          <div style={styles.signalCard}>
-            <div style={styles.signalLabel}>Community Paramedicine</div>
-            <div style={styles.signalValue}>31 avoided ED trips</div>
-            <div style={styles.signalNote}>
-              Care-in-place activity increasing across rural service area.
-            </div>
-          </div>
-
-          <div style={styles.signalCard}>
-            <div style={styles.signalLabel}>Mutual Aid Load</div>
-            <div style={styles.signalValue}>Stable</div>
-            <div style={styles.signalNote}>
-              No significant cross-county surge dependency detected today.
-            </div>
-          </div>
-        </div>
-      </section>
       <p style={styles.sectionIntro}>
-        Quick morning awareness for chiefs who want both the live signal and the
-        research-minded interpretation.
+        Concise intelligence ticker for the regional EMS operating picture.
       </p>
+
+      <div style={styles.tickerList}>
+        <div style={styles.tickerItem}>
+          <span style={styles.tickerLabel}>Health</span>
+          Respiratory burden may add low-acuity demand and prolong offloads.
+        </div>
+        <div style={styles.tickerItem}>
+          <span style={styles.tickerLabel}>Transfer</span>
+          South and east corridor hospitals remain the main friction watch.
+        </div>
+        <div style={styles.tickerItem}>
+          <span style={styles.tickerLabel}>CP</span>
+          Care-in-place activity is protecting unit availability.
+        </div>
+      </div>
 
       <div style={styles.chipWrap}>
         {[
@@ -533,78 +492,97 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 
   const territoryDetails: Record<
     string,
-    Record<string, { interpretation: string; why: string }>
+    Record<
+      string,
+      { implication: string; impact: string; strain: string }
+    >
   > = {
     "Weather Alerts": {
       "Rochester / Olmsted": {
-        interpretation: "Live NWS forecast point supports a watchful operating posture.",
-        why: "Weather can change response time, scene safety, and interfacility travel.",
+        implication: "Watch for wet roads and short storm windows around shift change.",
+        impact: "May slow response and interfacility movement without changing the whole regional posture.",
+        strain: "Low to moderate",
       },
       "Mankato / Blue Earth": {
-        interpretation: "Live conditions and alert proximity should be monitored for transport disruption.",
-        why: "Longer rural moves are more exposed to wind, storms, and road conditions.",
+        implication: "Longer west-corridor transports are more exposed to wind and storm timing.",
+        impact: "Crews may need extra margin on transfers and mutual aid moves.",
+        strain: "Moderate",
       },
       "Faribault-Owatonna": {
-        interpretation: "Current forecast point does not indicate a major operating disruption.",
-        why: "Clear weather preserves normal response and transfer assumptions.",
+        implication: "Weather is not the primary constraint in this territory right now.",
+        impact: "Normal response and transfer assumptions remain reasonable.",
+        strain: "Low",
       },
       "Winona / Bluff Country": {
-        interpretation: "Bluff terrain and weather changes can complicate access and transport.",
-        why: "Terrain-sensitive weather risk matters for scene access and regional coverage.",
+        implication: "Bluff terrain can amplify modest weather into access and transport friction.",
+        impact: "Scene access, turnout time, and regional coverage recovery may be more fragile.",
+        strain: "Moderate",
       },
     },
     "Air Quality": {
       "Rochester / Olmsted": {
-        interpretation: "Good air quality suggests limited added respiratory load.",
-        why: "Cleaner air reduces risk for vulnerable respiratory patients.",
+        implication: "Air quality is not adding meaningful respiratory pressure.",
+        impact: "No special respiratory demand adjustment expected from AQI.",
+        strain: "Low",
       },
       "Mankato / Blue Earth": {
-        interpretation: "Moderate AQI may increase symptoms for sensitive groups.",
-        why: "Smoke and particulate risk can raise low-acuity calls and CP follow-up needs.",
+        implication: "Moderate AQI may bother COPD, asthma, and older patients.",
+        impact: "Expect some added low-acuity assessments and CP follow-up opportunities.",
+        strain: "Low to moderate",
       },
       "Faribault-Owatonna": {
-        interpretation: "Moderate AQI warrants awareness for asthma and COPD patients.",
-        why: "Air quality can shift demand toward respiratory assessment and care-in-place.",
+        implication: "Moderate AQI overlaps with a territory already sensitive to access pressure.",
+        impact: "May increase respiratory assessment volume and care-in-place demand.",
+        strain: "Moderate",
       },
       "Winona / Bluff Country": {
-        interpretation: "Good air quality supports normal respiratory demand expectations.",
-        why: "Stable air quality helps preserve routine EMS demand assumptions.",
+        implication: "Air quality is favorable for vulnerable patients.",
+        impact: "No AQI-driven EMS demand signal expected.",
+        strain: "Low",
       },
     },
-    "Respiratory Trend": {
+    "Acute Health Awareness": {
       "Rochester / Olmsted": {
-        interpretation: "Elevated respiratory trend may increase low-acuity and referral demand.",
-        why: "Flu, RSV, and COVID-like signals can drive EMS calls and ED congestion.",
+        implication: "Respiratory illness pressure may increase low-acuity and oxygen-related calls.",
+        impact: "Watch SNF clusters, CP referrals, and ED offload delays tied to respiratory burden.",
+        strain: "Moderate",
       },
       "Mankato / Blue Earth": {
-        interpretation: "Moderate trend suggests continued monitoring without surge assumptions.",
-        why: "Moderate respiratory activity still affects staffing, PPE, and CP follow-up.",
+        implication: "Respiratory demand is present but not yet dominant.",
+        impact: "Monitor staffing stress and repeat callers before they become transport friction.",
+        strain: "Low to moderate",
       },
       "Faribault-Owatonna": {
-        interpretation: "Elevated trend may create more care-in-place opportunities.",
-        why: "Early recognition can route appropriate patients to CP or follow-up pathways.",
+        implication: "Elevated trend may combine with transfer friction.",
+        impact: "Care-in-place and CP follow-up could preserve units during peak periods.",
+        strain: "Moderate",
       },
       "Winona / Bluff Country": {
-        interpretation: "Stable trend supports baseline respiratory planning.",
-        why: "Stable respiratory demand protects unit availability and transfer capacity.",
+        implication: "Stable respiratory signal supports baseline planning.",
+        impact: "No respiratory-driven surge posture needed, but watch long transport recovery.",
+        strain: "Low",
       },
     },
     "Regional Hospital Status": {
       "Rochester / Olmsted": {
-        interpretation: "Stable status suggests current transfer and bed pressure is manageable.",
-        why: "Hospital flow affects ambulance turnaround and regional response readiness.",
+        implication: "Regional referral center posture appears manageable.",
+        impact: "Turnaround and transfer acceptance should not drive the morning risk picture.",
+        strain: "Low",
       },
       "Mankato / Blue Earth": {
-        interpretation: "Watch status suggests transfer queues or bed pressure may slow movement.",
-        why: "Transfer friction can tie up rural units and increase mutual aid exposure.",
+        implication: "Transfer friction could slow unit recovery.",
+        impact: "Watch queue time, offload delay, and mutual aid exposure.",
+        strain: "Moderate",
       },
       "Faribault-Owatonna": {
-        interpretation: "Watch status indicates offload or transfer pressure deserves attention.",
-        why: "Even moderate hospital drag can reduce available EMS coverage.",
+        implication: "Boarding or transfer delay concepts may affect coverage resilience.",
+        impact: "Moderate hospital drag can reduce available EMS coverage.",
+        strain: "Moderate",
       },
       "Winona / Bluff Country": {
-        interpretation: "Strained status suggests hospital pressure could affect coverage resilience.",
-        why: "Long transports plus offload delay can compound rural availability risk.",
+        implication: "Hospital pressure plus long transport geography creates the sharpest watch item.",
+        impact: "Expect slower recovery and higher dependence on neighboring coverage.",
+        strain: "Elevated",
       },
     },
   };
@@ -636,7 +614,7 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       value: mostRelevantAqi
         ? `${mostRelevantAqi.category} AQI ${mostRelevantAqi.aqi}`
         : "Moderate AQI",
-      note: "Demo public-health signal for smoke and respiratory vulnerability.",
+      note: "Prototype public-health layer for smoke and respiratory vulnerability.",
       territoryRisk: {
         "Rochester / Olmsted": "Good",
         "Mankato / Blue Earth": "Moderate",
@@ -645,10 +623,10 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       },
     },
     {
-      title: "Respiratory Trend",
+      title: "Acute Health Awareness",
       icon: "🫁",
-      value: "CDC signal",
-      note: "Live/near-live respiratory surveillance concept using CDC and state health feeds.",
+      value: "Elevated",
+      note: "Respiratory-driven call burden and care-in-place demand signal.",
       territoryRisk: {
         "Rochester / Olmsted": "Elevated",
         "Mankato / Blue Earth": "Moderate",
@@ -659,8 +637,8 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     {
       title: "Regional Hospital Status",
       icon: "🏥",
-      value: "Prototype Hospital Status",
-      note: "Bed / transfer pressure shown as prototype operating data.",
+      value: "Moderate Transfer Strain",
+      note: "Prototype posture for transfer friction, boarding, and offload pressure.",
       territoryRisk: {
         "Rochester / Olmsted": "Stable",
         "Mankato / Blue Earth": "Watch",
@@ -675,6 +653,20 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     environmentSignals[0];
 
   const activeTerritoryDetails = territoryDetails[activeSignal.title] || {};
+
+  const weatherByTerritory = regionalWeather.reduce<
+    Record<string, RegionalWeatherTerritory>
+  >((acc, territory) => {
+    acc[territory.name] = territory;
+    return acc;
+  }, {});
+
+  const territoryOverlays: Record<string, string[]> = {
+    "Rochester / Olmsted": ["Weather", "Respiratory"],
+    "Mankato / Blue Earth": ["Hospital", "Air Quality"],
+    "Faribault-Owatonna": ["Hospital", "Respiratory"],
+    "Winona / Bluff Country": ["Hospital", "Weather"],
+  };
 
   const riskStyle = (value: string) => ({
     ...styles.riskBadge,
@@ -727,56 +719,25 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 
       <div style={styles.detailCard}>
         <div style={styles.detailHeaderRow}>
-          <div style={styles.detailLabel}>Live Weather Feed</div>
-          <span style={styles.liveBadge}>NWS</span>
+          <div style={styles.detailLabel}>
+            {activeSignal.title}: Territory Impacts
+          </div>
+          <span style={styles.liveBadge}>
+            {activeSignal.title === "Weather Alerts" ? "NWS" : "Ops posture"}
+          </span>
         </div>
         <div style={{ ...styles.metaText, marginBottom: 10 }}>
-          Last updated: {formatDateTime(weatherUpdated)}
-        </div>
-        <div style={styles.supportList}>
-          {regionalWeather.map((territory) => (
-            <div key={territory.name} style={styles.weatherCard}>
-              <div style={styles.weatherTopRow}>
-                <div>
-                  <div style={styles.peerTitle}>{territory.name}</div>
-                  <div style={styles.metaText}>
-                    Wind: {territory.windSpeed}
-                  </div>
-                </div>
-                {territory.icon ? (
-                  <img
-                    src={territory.icon}
-                    alt=""
-                    style={styles.weatherIcon}
-                  />
-                ) : null}
-              </div>
-              <div style={styles.weatherValue}>
-                {territory.temperature === null
-                  ? "--"
-                  : `${territory.temperature}°F`}
-              </div>
-              <div style={styles.signalNote}>{territory.shortForecast}</div>
-              <div style={styles.weatherFooterRow}>
-                <span style={riskStyle(territory.risk)}>{territory.risk}</span>
-                <span style={styles.metaText}>
-                  {territory.alertCount} active alert
-                  {territory.alertCount === 1 ? "" : "s"}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={styles.detailCard}>
-        <div style={styles.detailLabel}>{activeSignal.title} by Territory</div>
-        <div style={styles.detailText}>
-          {activeSignal.title === "Regional Hospital Status"
-            ? "Hospital status is shown as prototype operating data. Future integrations could connect bed capacity, transfer queues, diversion status, or EMS offload delay feeds."
-            : activeSignal.title === "Respiratory Trend"
-            ? "Live/near-live respiratory surveillance concept using CDC and state health feeds."
-            : "This domain helps leaders understand where environmental and community conditions may affect call volume, transport time, or care-in-place demand."}
+          {activeSignal.title === "Weather Alerts"
+            ? `Last updated: ${formatDateTime(weatherUpdated)}`
+            : activeSignal.title === "Acute Health Awareness"
+            ? `CDC/MDH-inspired prototype signal. Last updated: ${formatDateTime(
+                respiratoryUpdated
+              )}`
+            : activeSignal.title === "Regional Hospital Status"
+            ? "Prototype operating posture. Future integrations could connect transfer queues, diversion status, offload delay, and boarding signals."
+            : `Prototype public-health layer. Last updated: ${formatDateTime(
+                airUpdated
+              )}`}
         </div>
         <div style={styles.supportList}>
           {territories.map((territory) => (
@@ -787,89 +748,79 @@ function OperationalEnvironment({ intro }: { intro: string }) {
                   {activeSignal.territoryRisk[territory]}
                 </span>
               </div>
+              <div style={styles.overlayRow}>
+                {(territoryOverlays[territory] || []).map((overlay) => (
+                  <span key={overlay} style={styles.overlayPill}>
+                    {overlay}
+                  </span>
+                ))}
+              </div>
+              {activeSignal.title === "Weather Alerts" ? (
+                <div style={styles.compactWeatherLine}>
+                  {weatherByTerritory[territory]?.temperature === null ||
+                  !weatherByTerritory[territory]
+                    ? ""
+                    : `${weatherByTerritory[territory].temperature}°F · `}
+                  {weatherByTerritory[territory]?.shortForecast ||
+                    "Forecast pending"}
+                </div>
+              ) : null}
               <div style={styles.signalText}>
-                {activeTerritoryDetails[territory]?.interpretation}
+                {activeTerritoryDetails[territory]?.implication}
               </div>
               <div style={{ ...styles.metaText, marginTop: 8 }}>
-                Why it matters to EMS: {activeTerritoryDetails[territory]?.why}
+                EMS impact: {activeTerritoryDetails[territory]?.impact}
+              </div>
+              <div style={{ ...styles.metaText, marginTop: 4 }}>
+                Expected strain: {activeTerritoryDetails[territory]?.strain}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div style={{ ...styles.detailCard, marginTop: 10 }}>
-        <div style={styles.detailLabel}>Regional Alert Feed</div>
-        <div style={{ ...styles.metaText, marginBottom: 10 }}>
-          Last updated: {formatDateTime(weatherUpdated)}
-        </div>
-        <div style={styles.stack10}>
-          {alerts.length ? (
-            alerts.slice(0, 3).map((alert) => (
-              <div key={`${alert.event}-${alert.expires}`} style={styles.alertItem}>
-                <div style={styles.peerTitle}>{alert.event}</div>
-                <div style={styles.metaText}>Severity: {alert.severity}</div>
-                <div style={styles.metaText}>Affected region: {alert.areaDesc}</div>
-                <div style={styles.metaText}>
-                  Expires: {formatDateTime(alert.expires)}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div style={styles.signalText}>
-              No active Minnesota weather alerts.
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div style={{ ...styles.detailCard, marginTop: 10 }}>
-        <div style={styles.detailLabel}>Air Quality Feed</div>
-        <div style={{ ...styles.metaText, marginBottom: 10 }}>
-          Demo public-health signal.
-        </div>
-        <div style={{ ...styles.metaText, marginBottom: 10 }}>
-          Last updated: {formatDateTime(airUpdated)}
-        </div>
-        <div style={styles.supportList}>
-          {airQuality.length ? (
-            airQuality.map((item) => (
-              <div key={item.area} style={styles.territoryItem}>
-                <div>
-                  <div style={styles.peerTitle}>{item.area}</div>
+      {activeSignal.title === "Weather Alerts" ? (
+        <div style={{ ...styles.detailCard, marginTop: 10 }}>
+          <div style={styles.detailLabel}>Active Weather Watch Items</div>
+          <div style={styles.stack10}>
+            {alerts.length ? (
+              alerts.slice(0, 3).map((alert) => (
+                <div key={`${alert.event}-${alert.expires}`} style={styles.alertItem}>
+                  <div style={styles.peerTitle}>{alert.event}</div>
+                  <div style={styles.metaText}>Severity: {alert.severity}</div>
+                  <div style={styles.metaText}>Affected region: {alert.areaDesc}</div>
                   <div style={styles.metaText}>
-                    Primary pollutant: {item.pollutant}
+                    Expires: {formatDateTime(alert.expires)}
                   </div>
                 </div>
-                <span style={riskStyle(item.category)}>
-                  {item.category} {item.aqi}
-                </span>
+              ))
+            ) : (
+              <div style={styles.signalText}>
+                No active Minnesota weather alerts.
               </div>
-            ))
-          ) : (
-            <div style={styles.signalText}>
-              Air quality observations are temporarily unavailable.
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      ) : null}
 
-      <div style={{ ...styles.detailCard, marginTop: 10 }}>
-        <div style={styles.detailLabel}>Community Health Pulse</div>
-        <div style={{ ...styles.metaText, marginBottom: 10 }}>
-          CDC/MDH-inspired prototype signal. Source: {respiratorySource}. Last
-          updated: {formatDateTime(respiratoryUpdated)}
+      {activeSignal.title === "Acute Health Awareness" ? (
+        <div style={{ ...styles.detailCard, marginTop: 10 }}>
+          <div style={styles.detailLabel}>Acute Health Awareness Inputs</div>
+          <div style={{ ...styles.metaText, marginBottom: 10 }}>
+            Source: {respiratorySource}. Used as an EMS demand signal, not an
+            epidemiology dashboard.
+          </div>
+          <div style={styles.signalGrid}>
+            {respiratoryIndicators.map((item) => (
+              <div key={item.name} style={styles.supportItem}>
+                <div style={styles.signalLabel}>{item.name}</div>
+                <div style={styles.signalValue}>{item.value}</div>
+                <div style={styles.signalNote}>{item.interpretation}</div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div style={styles.signalGrid}>
-          {respiratoryIndicators.map((item) => (
-            <div key={item.name} style={styles.supportItem}>
-              <div style={styles.signalLabel}>{item.name}</div>
-              <div style={styles.signalValue}>{item.value}</div>
-              <div style={styles.signalNote}>{item.interpretation}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -1493,6 +1444,33 @@ const styles: any = {
     minWidth: 0,
   },
 
+  tickerList: {
+    display: "grid",
+    gap: 8,
+    marginBottom: 12,
+    minWidth: 0,
+  },
+
+  tickerItem: {
+    border: "1px solid #e5e7eb",
+    borderRadius: 10,
+    background: "#fafafa",
+    padding: "9px 10px",
+    fontSize: 13,
+    lineHeight: 1.4,
+    color: "#374151",
+    minWidth: 0,
+    overflowWrap: "anywhere",
+    boxSizing: "border-box",
+  },
+
+  tickerLabel: {
+    display: "inline-block",
+    marginRight: 8,
+    color: "#111827",
+    fontWeight: 900,
+  },
+
   signalCard: {
     background: "#ffffff",
     borderRadius: 14,
@@ -1675,6 +1653,39 @@ const styles: any = {
     gap: 10,
     marginTop: 10,
     minWidth: 0,
+  },
+
+  compactWeatherLine: {
+    borderRadius: 9,
+    background: "#eff6ff",
+    color: "#1e3a8a",
+    padding: "7px 9px",
+    fontSize: 12,
+    fontWeight: 700,
+    lineHeight: 1.35,
+    marginBottom: 8,
+    minWidth: 0,
+    overflowWrap: "anywhere",
+    boxSizing: "border-box",
+  },
+
+  overlayRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 6,
+    marginBottom: 8,
+    minWidth: 0,
+  },
+
+  overlayPill: {
+    borderRadius: 999,
+    background: "#f3f4f6",
+    color: "#374151",
+    border: "1px solid #e5e7eb",
+    padding: "3px 8px",
+    fontSize: 11,
+    fontWeight: 800,
+    lineHeight: 1.2,
   },
 
   alertItem: {
