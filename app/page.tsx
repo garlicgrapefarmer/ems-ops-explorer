@@ -826,20 +826,23 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 }
 
 function RegionalDeploymentOverview() {
+  const staticMapUrl =
+    "https://staticmap.openstreetmap.de/staticmap.php?center=44.05,-92.35&zoom=8&size=1200x700&maptype=mapnik";
+
   const resources = [
-    { label: "A1", type: "911 Ambulance", icon: "🚑", top: "38%", left: "64%" },
-    { label: "A2", type: "911 Ambulance", icon: "🚑", top: "54%", left: "30%" },
-    { label: "A3", type: "911 Ambulance", icon: "🚑", top: "57%", left: "51%" },
-    { label: "CP1", type: "CP SUV", icon: "▣", top: "44%", left: "69%" },
-    { label: "CP2", type: "CP SUV", icon: "▣", top: "62%", left: "80%" },
-    { label: "S1", type: "Supervisor", icon: "◆", top: "50%", left: "56%" },
+    { label: "A1", type: "911 Ambulance", icon: "🚑", top: "43%", left: "61%" },
+    { label: "A2", type: "911 Ambulance", icon: "🚑", top: "55%", left: "28%" },
+    { label: "A3", type: "911 Ambulance", icon: "🚑", top: "57%", left: "48%" },
+    { label: "CP1", type: "CP SUV", icon: "▣", top: "49%", left: "64%" },
+    { label: "CP2", type: "CP SUV", icon: "▣", top: "61%", left: "76%" },
+    { label: "S1", type: "Supervisor", icon: "◆", top: "52%", left: "54%" },
   ];
 
   const territories = [
-    { name: "Mankato / Blue Earth", style: { top: "47%", left: "23%" } },
-    { name: "Faribault-Owatonna", style: { top: "58%", left: "48%" } },
-    { name: "Rochester / Olmsted", style: { top: "42%", left: "63%" } },
-    { name: "Winona / Bluff Country", style: { top: "64%", left: "82%" } },
+    { name: "Mankato / Blue Earth", style: { top: "47%", left: "24%" } },
+    { name: "Faribault-Owatonna", style: { top: "56%", left: "46%" } },
+    { name: "Rochester / Olmsted", style: { top: "42%", left: "61%" } },
+    { name: "Winona / Bluff Country", style: { top: "60%", left: "78%" } },
   ];
 
   return (
@@ -853,15 +856,13 @@ function RegionalDeploymentOverview() {
       </p>
 
       <div style={styles.mapShell}>
-        <div style={styles.mapGrid} />
-        <div style={styles.mapRiver} />
-        <div style={styles.mapHighwayEastWest} />
-        <div style={styles.mapHighwaySouth} />
-        <div style={styles.mapHighwayRiver} />
-        <div style={{ ...styles.roadLabel, top: "47%", left: "39%" }}>US-14</div>
-        <div style={{ ...styles.roadLabel, top: "63%", left: "58%" }}>I-90</div>
-        <div style={{ ...styles.roadLabel, top: "53%", left: "45%" }}>I-35</div>
-        <div style={{ ...styles.riverLabel, top: "72%", left: "89%" }}>Mississippi River</div>
+        <img
+          src={staticMapUrl}
+          alt="Static map of Southern Minnesota regional geography"
+          referrerPolicy="no-referrer"
+          style={styles.staticMapImage}
+        />
+        <div style={styles.mapSoftOverlay} />
 
         {territories.map((territory) => (
           <div
@@ -891,6 +892,45 @@ function RegionalDeploymentOverview() {
       </div>
       <div style={{ ...styles.metaText, marginTop: 8 }}>
         Demo resource placement shown for operational concept only.
+      </div>
+    </div>
+  );
+}
+
+function CareContinuitySignals() {
+  const signals = [
+    { label: "Primary Care Notes Forwarded", value: "18", status: "On Track" },
+    { label: "CP Follow-Ups Scheduled", value: "31", status: "Watch" },
+    { label: "Care Plans Generated", value: "12", status: "Building" },
+    { label: "Rural Clinic / CAH Warm Handoffs", value: "9", status: "Building" },
+    { label: "CHW / Care Navigation Referrals", value: "14", status: "Watch" },
+  ];
+
+  const localPillStyle = (status: string) => ({
+    ...styles.statusPill,
+    background: status === "On Track" ? "#dcfce7" : "#fef3c7",
+    color: status === "On Track" ? "#166534" : "#92400e",
+  });
+
+  return (
+    <div style={styles.panel}>
+      <div style={styles.panelHeaderRow}>
+        <h2 style={styles.sectionTitle}>Care Continuity Signals</h2>
+      </div>
+      <p style={styles.sectionIntro}>
+        Lightweight continuity indicators showing EMS and paramedicine as part
+        of rural healthcare infrastructure.
+      </p>
+      <div style={styles.supportList}>
+        {signals.map((signal) => (
+          <div key={signal.label} style={styles.metricItem}>
+            <div style={styles.metricTextBlock}>
+              <span>{signal.label}</span>
+              <div style={styles.metricSubText}>{signal.value} today</div>
+            </div>
+            <span style={localPillStyle(signal.status)}>{signal.status}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1228,6 +1268,8 @@ export default function Home() {
         <OperationalEnvironment intro={activeRoleCopy.environmentIntro} />
 
         <RegionalDeploymentOverview />
+
+        <CareContinuitySignals />
 
         <div style={styles.panel}>
           <div style={styles.panelHeaderRow}>
@@ -1613,87 +1655,25 @@ const styles: any = {
     borderRadius: 16,
     border: "1px solid #cbd5e1",
     background:
-      "linear-gradient(135deg, #e8efe9 0%, #eef1e7 48%, #e4ecef 100%)",
+      "linear-gradient(135deg, #e7efe9 0%, #eef2e6 52%, #e3edf1 100%)",
     overflow: "hidden",
     boxSizing: "border-box",
   },
 
-  mapGrid: {
+  staticMapImage: {
     position: "absolute",
     inset: 0,
-    backgroundImage:
-      "linear-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.14) 1px, transparent 1px)",
-    backgroundSize: "42px 42px",
-    opacity: 0.55,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    filter: "saturate(0.72) contrast(0.92) brightness(1.03)",
   },
 
-  mapRiver: {
+  mapSoftOverlay: {
     position: "absolute",
-    top: "-8%",
-    right: "4%",
-    width: "18%",
-    height: "116%",
-    borderLeft: "10px solid rgba(96, 165, 250, 0.36)",
-    borderRadius: "55% 0 0 48%",
-    transform: "rotate(8deg)",
-  },
-
-  mapHighwayEastWest: {
-    position: "absolute",
-    top: "48%",
-    left: "14%",
-    width: "58%",
-    height: 4,
-    background: "rgba(71, 85, 105, 0.34)",
-    borderRadius: 999,
-    transform: "rotate(-5deg)",
-    transformOrigin: "center",
-  },
-
-  mapHighwaySouth: {
-    position: "absolute",
-    top: "39%",
-    left: "39%",
-    width: "39%",
-    height: 4,
-    background: "rgba(71, 85, 105, 0.28)",
-    borderRadius: 999,
-    transform: "rotate(74deg)",
-    transformOrigin: "center",
-  },
-
-  mapHighwayRiver: {
-    position: "absolute",
-    top: "64%",
-    left: "42%",
-    width: "43%",
-    height: 4,
-    background: "rgba(71, 85, 105, 0.26)",
-    borderRadius: 999,
-    transform: "rotate(5deg)",
-    transformOrigin: "center",
-  },
-
-  roadLabel: {
-    position: "absolute",
-    transform: "translate(-50%, -50%)",
-    color: "#64748b",
-    background: "rgba(255,255,255,0.66)",
-    border: "1px solid rgba(203, 213, 225, 0.8)",
-    borderRadius: 999,
-    padding: "2px 6px",
-    fontSize: 10,
-    fontWeight: 900,
-  },
-
-  riverLabel: {
-    position: "absolute",
-    transform: "translate(-50%, -50%) rotate(78deg)",
-    color: "#2563eb",
-    fontSize: 10,
-    fontWeight: 800,
-    opacity: 0.72,
-    whiteSpace: "nowrap",
+    inset: 0,
+    background: "rgba(248, 250, 252, 0.14)",
+    pointerEvents: "none",
   },
 
   mapTerritoryLabel: {
