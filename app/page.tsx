@@ -827,36 +827,41 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 
 function RegionalDeploymentOverview() {
   const resources = [
-    { label: "A1", type: "911 Ambulance", icon: "🚑", top: "30%", left: "59%" },
-    { label: "A2", type: "911 Ambulance", icon: "🚑", top: "54%", left: "35%" },
-    { label: "A3", type: "911 Ambulance", icon: "🚑", top: "62%", left: "61%" },
-    { label: "CP1", type: "CP SUV", icon: "▣", top: "38%", left: "66%" },
-    { label: "CP2", type: "CP SUV", icon: "▣", top: "70%", left: "76%" },
-    { label: "S1", type: "Supervisor", icon: "◆", top: "46%", left: "48%" },
+    { label: "A1", type: "911 Ambulance", icon: "🚑", top: "38%", left: "64%" },
+    { label: "A2", type: "911 Ambulance", icon: "🚑", top: "54%", left: "30%" },
+    { label: "A3", type: "911 Ambulance", icon: "🚑", top: "57%", left: "51%" },
+    { label: "CP1", type: "CP SUV", icon: "▣", top: "44%", left: "69%" },
+    { label: "CP2", type: "CP SUV", icon: "▣", top: "62%", left: "80%" },
+    { label: "S1", type: "Supervisor", icon: "◆", top: "50%", left: "56%" },
   ];
 
   const territories = [
-    { name: "Mankato / Blue Earth", style: { top: "47%", left: "15%" } },
-    { name: "Faribault-Owatonna", style: { top: "55%", left: "44%" } },
-    { name: "Rochester / Olmsted", style: { top: "38%", left: "61%" } },
-    { name: "Winona / Bluff Country", style: { top: "66%", left: "68%" } },
+    { name: "Mankato / Blue Earth", style: { top: "47%", left: "23%" } },
+    { name: "Faribault-Owatonna", style: { top: "58%", left: "48%" } },
+    { name: "Rochester / Olmsted", style: { top: "42%", left: "63%" } },
+    { name: "Winona / Bluff Country", style: { top: "64%", left: "82%" } },
   ];
 
   return (
     <div style={styles.panel}>
       <div style={styles.panelHeaderRow}>
-        <h2 style={styles.sectionTitle}>Regional Deployment Overview</h2>
+        <h2 style={styles.sectionTitle}>Illustrative Regional Deployment Overview</h2>
       </div>
       <p style={styles.sectionIntro}>
-        Illustrative regional resource distribution for territory-based
-        awareness. Not live AVL or dispatch tracking.
+        Static Southern Minnesota resource distribution for territory-based
+        awareness. Not live AVL, CAD, or real-time vehicle tracking.
       </p>
 
       <div style={styles.mapShell}>
-        <div style={styles.mapBandNorth} />
-        <div style={styles.mapBandSouth} />
-        <div style={styles.mapRouteOne} />
-        <div style={styles.mapRouteTwo} />
+        <div style={styles.mapGrid} />
+        <div style={styles.mapRiver} />
+        <div style={styles.mapHighwayEastWest} />
+        <div style={styles.mapHighwaySouth} />
+        <div style={styles.mapHighwayRiver} />
+        <div style={{ ...styles.roadLabel, top: "47%", left: "39%" }}>US-14</div>
+        <div style={{ ...styles.roadLabel, top: "63%", left: "58%" }}>I-90</div>
+        <div style={{ ...styles.roadLabel, top: "53%", left: "45%" }}>I-35</div>
+        <div style={{ ...styles.riverLabel, top: "72%", left: "89%" }}>Mississippi River</div>
 
         {territories.map((territory) => (
           <div
@@ -883,6 +888,9 @@ function RegionalDeploymentOverview() {
         <span style={styles.legendItem}>🚑 911 ambulances</span>
         <span style={styles.legendItem}>▣ CP SUVs</span>
         <span style={styles.legendItem}>◆ Supervisor</span>
+      </div>
+      <div style={{ ...styles.metaText, marginTop: 8 }}>
+        Demo resource placement shown for operational concept only.
       </div>
     </div>
   );
@@ -1601,53 +1609,97 @@ const styles: any = {
 
   mapShell: {
     position: "relative",
-    minHeight: 260,
+    minHeight: 285,
     borderRadius: 16,
-    border: "1px solid #dbe3ea",
-    background: "#eef3f1",
+    border: "1px solid #cbd5e1",
+    background:
+      "linear-gradient(135deg, #e8efe9 0%, #eef1e7 48%, #e4ecef 100%)",
     overflow: "hidden",
     boxSizing: "border-box",
   },
 
-  mapBandNorth: {
+  mapGrid: {
     position: "absolute",
-    inset: "0 0 auto 0",
-    height: "46%",
-    background: "rgba(220, 232, 226, 0.9)",
+    inset: 0,
+    backgroundImage:
+      "linear-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.14) 1px, transparent 1px)",
+    backgroundSize: "42px 42px",
+    opacity: 0.55,
   },
 
-  mapBandSouth: {
+  mapRiver: {
     position: "absolute",
-    inset: "46% 0 0 0",
-    background: "rgba(232, 236, 230, 0.9)",
+    top: "-8%",
+    right: "4%",
+    width: "18%",
+    height: "116%",
+    borderLeft: "10px solid rgba(96, 165, 250, 0.36)",
+    borderRadius: "55% 0 0 48%",
+    transform: "rotate(8deg)",
   },
 
-  mapRouteOne: {
+  mapHighwayEastWest: {
     position: "absolute",
-    top: "50%",
-    left: "12%",
-    width: "76%",
-    height: 2,
-    background: "rgba(107, 114, 128, 0.28)",
-    transform: "rotate(-8deg)",
+    top: "48%",
+    left: "14%",
+    width: "58%",
+    height: 4,
+    background: "rgba(71, 85, 105, 0.34)",
+    borderRadius: 999,
+    transform: "rotate(-5deg)",
     transformOrigin: "center",
   },
 
-  mapRouteTwo: {
+  mapHighwaySouth: {
     position: "absolute",
-    top: "58%",
-    left: "34%",
-    width: "48%",
-    height: 2,
-    background: "rgba(107, 114, 128, 0.22)",
-    transform: "rotate(31deg)",
+    top: "39%",
+    left: "39%",
+    width: "39%",
+    height: 4,
+    background: "rgba(71, 85, 105, 0.28)",
+    borderRadius: 999,
+    transform: "rotate(74deg)",
     transformOrigin: "center",
+  },
+
+  mapHighwayRiver: {
+    position: "absolute",
+    top: "64%",
+    left: "42%",
+    width: "43%",
+    height: 4,
+    background: "rgba(71, 85, 105, 0.26)",
+    borderRadius: 999,
+    transform: "rotate(5deg)",
+    transformOrigin: "center",
+  },
+
+  roadLabel: {
+    position: "absolute",
+    transform: "translate(-50%, -50%)",
+    color: "#64748b",
+    background: "rgba(255,255,255,0.66)",
+    border: "1px solid rgba(203, 213, 225, 0.8)",
+    borderRadius: 999,
+    padding: "2px 6px",
+    fontSize: 10,
+    fontWeight: 900,
+  },
+
+  riverLabel: {
+    position: "absolute",
+    transform: "translate(-50%, -50%) rotate(78deg)",
+    color: "#2563eb",
+    fontSize: 10,
+    fontWeight: 800,
+    opacity: 0.72,
+    whiteSpace: "nowrap",
   },
 
   mapTerritoryLabel: {
     position: "absolute",
     transform: "translate(-50%, -50%)",
-    color: "#475569",
+    color: "#334155",
     fontSize: 11,
     fontWeight: 800,
     lineHeight: 1.2,
@@ -1655,7 +1707,7 @@ const styles: any = {
     maxWidth: 105,
     padding: "4px 7px",
     borderRadius: 999,
-    background: "rgba(255, 255, 255, 0.72)",
+    background: "rgba(255, 255, 255, 0.82)",
     border: "1px solid rgba(203, 213, 225, 0.9)",
     boxSizing: "border-box",
   },
