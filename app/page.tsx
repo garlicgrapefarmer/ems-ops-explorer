@@ -34,6 +34,12 @@ type AirQualityObservation = {
   pollutant: string;
 };
 
+type RespiratorySignal = {
+  name: string;
+  value: string;
+  interpretation: string;
+};
+
 type Role = "Chief" | "Operations" | "Medic" | "Community";
 
 type Topic =
@@ -413,6 +419,13 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     []
   );
   const [airUpdated, setAirUpdated] = React.useState("");
+  const [respiratorySignals, setRespiratorySignals] = React.useState<
+    RespiratorySignal[]
+  >([]);
+  const [respiratoryUpdated, setRespiratoryUpdated] = React.useState("");
+  const [respiratorySource, setRespiratorySource] = React.useState(
+    "CDC/MDH-inspired prototype signal"
+  );
   const [activeDomain, setActiveDomain] = React.useState("Weather Alerts");
 
   React.useEffect(() => {
@@ -444,8 +457,24 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       }
     }
 
+    async function fetchRespiratorySurveillance() {
+      try {
+        const res = await fetch("/api/respiratory-surveillance");
+        const data = await res.json();
+        setRespiratorySignals(data.signals || []);
+        setRespiratoryUpdated(data.updatedAt || "");
+        setRespiratorySource(data.source || "CDC/MDH-inspired prototype signal");
+      } catch (err) {
+        console.error(err);
+        setRespiratorySignals([]);
+        setRespiratoryUpdated("");
+        setRespiratorySource("CDC/MDH-inspired prototype signal");
+      }
+    }
+
     fetchRegionalWeather();
     fetchAirQuality();
+    fetchRespiratorySurveillance();
   }, []);
 
   const territories = [
@@ -476,6 +505,109 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     },
     {}
   );
+
+  const respiratoryIndicators = respiratorySignals.length
+    ? respiratorySignals
+    : [
+        {
+          name: "Influenza activity",
+          value: "Moderate",
+          interpretation: "Seasonal flu activity may add low-acuity demand.",
+        },
+        {
+          name: "RSV pressure",
+          value: "Watch",
+          interpretation: "Pediatric and older-adult respiratory calls may increase.",
+        },
+        {
+          name: "COVID/respiratory ED signal",
+          value: "Elevated",
+          interpretation: "Respiratory ED burden may affect offload and referral decisions.",
+        },
+        {
+          name: "Expected EMS impact",
+          value: "Increased care-in-place need",
+          interpretation: "CP follow-up and treat-and-release pathways may protect capacity.",
+        },
+      ];
+
+  const territoryDetails: Record<
+    string,
+    Record<string, { interpretation: string; why: string }>
+  > = {
+    "Weather Alerts": {
+      "Rochester / Olmsted": {
+        interpretation: "Live NWS forecast point supports a watchful operating posture.",
+        why: "Weather can change response time, scene safety, and interfacility travel.",
+      },
+      "Mankato / Blue Earth": {
+        interpretation: "Live conditions and alert proximity should be monitored for transport disruption.",
+        why: "Longer rural moves are more exposed to wind, storms, and road conditions.",
+      },
+      "Faribault-Owatonna": {
+        interpretation: "Current forecast point does not indicate a major operating disruption.",
+        why: "Clear weather preserves normal response and transfer assumptions.",
+      },
+      "Winona / Bluff Country": {
+        interpretation: "Bluff terrain and weather changes can complicate access and transport.",
+        why: "Terrain-sensitive weather risk matters for scene access and regional coverage.",
+      },
+    },
+    "Air Quality": {
+      "Rochester / Olmsted": {
+        interpretation: "Good air quality suggests limited added respiratory load.",
+        why: "Cleaner air reduces risk for vulnerable respiratory patients.",
+      },
+      "Mankato / Blue Earth": {
+        interpretation: "Moderate AQI may increase symptoms for sensitive groups.",
+        why: "Smoke and particulate risk can raise low-acuity calls and CP follow-up needs.",
+      },
+      "Faribault-Owatonna": {
+        interpretation: "Moderate AQI warrants awareness for asthma and COPD patients.",
+        why: "Air quality can shift demand toward respiratory assessment and care-in-place.",
+      },
+      "Winona / Bluff Country": {
+        interpretation: "Good air quality supports normal respiratory demand expectations.",
+        why: "Stable air quality helps preserve routine EMS demand assumptions.",
+      },
+    },
+    "Respiratory Trend": {
+      "Rochester / Olmsted": {
+        interpretation: "Elevated respiratory trend may increase low-acuity and referral demand.",
+        why: "Flu, RSV, and COVID-like signals can drive EMS calls and ED congestion.",
+      },
+      "Mankato / Blue Earth": {
+        interpretation: "Moderate trend suggests continued monitoring without surge assumptions.",
+        why: "Moderate respiratory activity still affects staffing, PPE, and CP follow-up.",
+      },
+      "Faribault-Owatonna": {
+        interpretation: "Elevated trend may create more care-in-place opportunities.",
+        why: "Early recognition can route appropriate patients to CP or follow-up pathways.",
+      },
+      "Winona / Bluff Country": {
+        interpretation: "Stable trend supports baseline respiratory planning.",
+        why: "Stable respiratory demand protects unit availability and transfer capacity.",
+      },
+    },
+    "Regional Hospital Status": {
+      "Rochester / Olmsted": {
+        interpretation: "Stable status suggests current transfer and bed pressure is manageable.",
+        why: "Hospital flow affects ambulance turnaround and regional response readiness.",
+      },
+      "Mankato / Blue Earth": {
+        interpretation: "Watch status suggests transfer queues or bed pressure may slow movement.",
+        why: "Transfer friction can tie up rural units and increase mutual aid exposure.",
+      },
+      "Faribault-Owatonna": {
+        interpretation: "Watch status indicates offload or transfer pressure deserves attention.",
+        why: "Even moderate hospital drag can reduce available EMS coverage.",
+      },
+      "Winona / Bluff Country": {
+        interpretation: "Strained status suggests hospital pressure could affect coverage resilience.",
+        why: "Long transports plus offload delay can compound rural availability risk.",
+      },
+    },
+  };
 
   const environmentSignals: {
     title: string;
@@ -515,8 +647,8 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     {
       title: "Respiratory Trend",
       icon: "🫁",
-      value: "Elevated",
-      note: "Prototype public-health layer for respiratory demand.",
+      value: "CDC signal",
+      note: "Live/near-live respiratory surveillance concept using CDC and state health feeds.",
       territoryRisk: {
         "Rochester / Olmsted": "Elevated",
         "Mankato / Blue Earth": "Moderate",
@@ -525,10 +657,10 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       },
     },
     {
-      title: "Rural Access",
-      icon: "🚑",
-      value: "Watch",
-      note: "Long transport distances and transfer delays increase regional coverage risk.",
+      title: "Regional Hospital Status",
+      icon: "🏥",
+      value: "Prototype Hospital Status",
+      note: "Bed / transfer pressure shown as prototype operating data.",
       territoryRisk: {
         "Rochester / Olmsted": "Stable",
         "Mankato / Blue Earth": "Watch",
@@ -538,27 +670,11 @@ function OperationalEnvironment({ intro }: { intro: string }) {
     },
   ];
 
-  const healthPulse = [
-    {
-      title: "Respiratory Trend",
-      value: "Elevated",
-      note: "Syndromic indicators suggest increased respiratory call pressure.",
-    },
-    {
-      title: "Influenza Activity",
-      value: "Regional",
-      note: "Influenza-like illness remains present across care settings.",
-    },
-    {
-      title: "Vulnerable Population Stress",
-      value: "Watch",
-      note: "Older adults and chronic disease patients may need care-in-place follow-up.",
-    },
-  ];
-
   const activeSignal =
     environmentSignals.find((signal) => signal.title === activeDomain) ||
     environmentSignals[0];
+
+  const activeTerritoryDetails = territoryDetails[activeSignal.title] || {};
 
   const riskStyle = (value: string) => ({
     ...styles.riskBadge,
@@ -656,17 +772,27 @@ function OperationalEnvironment({ intro }: { intro: string }) {
       <div style={styles.detailCard}>
         <div style={styles.detailLabel}>{activeSignal.title} by Territory</div>
         <div style={styles.detailText}>
-          This domain helps leaders understand where environmental and community
-          conditions may affect call volume, transport time, or care-in-place
-          demand.
+          {activeSignal.title === "Regional Hospital Status"
+            ? "Hospital status is shown as prototype operating data. Future integrations could connect bed capacity, transfer queues, diversion status, or EMS offload delay feeds."
+            : activeSignal.title === "Respiratory Trend"
+            ? "Live/near-live respiratory surveillance concept using CDC and state health feeds."
+            : "This domain helps leaders understand where environmental and community conditions may affect call volume, transport time, or care-in-place demand."}
         </div>
         <div style={styles.supportList}>
           {territories.map((territory) => (
-            <div key={territory} style={styles.territoryItem}>
-              <div style={styles.peerTitle}>{territory}</div>
-              <span style={riskStyle(activeSignal.territoryRisk[territory])}>
-                {activeSignal.territoryRisk[territory]}
-              </span>
+            <div key={territory} style={styles.drillCard}>
+              <div style={styles.drillTopRow}>
+                <div style={styles.peerTitle}>{territory}</div>
+                <span style={riskStyle(activeSignal.territoryRisk[territory])}>
+                  {activeSignal.territoryRisk[territory]}
+                </span>
+              </div>
+              <div style={styles.signalText}>
+                {activeTerritoryDetails[territory]?.interpretation}
+              </div>
+              <div style={{ ...styles.metaText, marginTop: 8 }}>
+                Why it matters to EMS: {activeTerritoryDetails[territory]?.why}
+              </div>
             </div>
           ))}
         </div>
@@ -730,12 +856,16 @@ function OperationalEnvironment({ intro }: { intro: string }) {
 
       <div style={{ ...styles.detailCard, marginTop: 10 }}>
         <div style={styles.detailLabel}>Community Health Pulse</div>
+        <div style={{ ...styles.metaText, marginBottom: 10 }}>
+          CDC/MDH-inspired prototype signal. Source: {respiratorySource}. Last
+          updated: {formatDateTime(respiratoryUpdated)}
+        </div>
         <div style={styles.signalGrid}>
-          {healthPulse.map((item) => (
-            <div key={item.title} style={styles.supportItem}>
-              <div style={styles.signalLabel}>{item.title}</div>
+          {respiratoryIndicators.map((item) => (
+            <div key={item.name} style={styles.supportItem}>
+              <div style={styles.signalLabel}>{item.name}</div>
               <div style={styles.signalValue}>{item.value}</div>
-              <div style={styles.signalNote}>{item.note}</div>
+              <div style={styles.signalNote}>{item.interpretation}</div>
             </div>
           ))}
         </div>
@@ -1572,6 +1702,25 @@ const styles: any = {
     minWidth: 0,
     overflow: "hidden",
     boxSizing: "border-box",
+  },
+
+  drillCard: {
+    borderRadius: 12,
+    background: "#ffffff",
+    border: "1px solid #e5e7eb",
+    padding: 12,
+    minWidth: 0,
+    overflow: "hidden",
+    boxSizing: "border-box",
+  },
+
+  drillTopRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 10,
+    marginBottom: 8,
+    minWidth: 0,
   },
 
   riskBadge: {
